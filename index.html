@@ -83,19 +83,35 @@
             justify-content: center;
             align-items: end;
             margin: 20px 0;
-            height: 100px;
+            height: 120px;
         }
         
         .castle-part {
-            margin: 0 5px;
+            margin: 0 3px;
             font-size: 2em;
             opacity: 0.3;
             transition: all 0.5s ease;
+            position: relative;
         }
         
         .castle-part.built {
             opacity: 1;
             transform: scale(1.1);
+        }
+        
+        .level-indicator {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffd700;
+            color: #8b5a96;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.5em;
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
         }
         
         .score-board {
@@ -171,7 +187,24 @@
             box-shadow: 0 15px 45px rgba(0,0,0,0.1);
             border: 4px solid #ffd700;
             animation: slideInUp 0.6s ease-out;
-            min-height: 300px;
+            min-height: 350px;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #8b5a96;
+        }
+        
+        .current-level {
+            background: linear-gradient(135deg, #8b5a96 0%, #ce93d8 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-weight: bold;
         }
         
         .question-text {
@@ -287,12 +320,13 @@
         
         .progress-bar {
             width: 100%;
-            height: 15px;
+            height: 20px;
             background: rgba(255, 255, 255, 0.3);
             border-radius: 10px;
             margin: 20px 0;
             overflow: hidden;
             border: 2px solid #ffd700;
+            position: relative;
         }
         
         .progress-fill {
@@ -300,6 +334,16 @@
             background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%);
             border-radius: 10px;
             transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #8b5a96;
+            font-weight: bold;
+            font-size: 0.9em;
         }
         
         .fireworks {
@@ -344,7 +388,7 @@
             text-align: center;
             border: 4px solid #ff9a9e;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: levelUpAnimation 2s ease-in-out forwards;
+            animation: levelUpAnimation 3s ease-in-out forwards;
         }
         
         @keyframes levelUpAnimation {
@@ -428,16 +472,6 @@
                 min-width: 100px;
             }
         }
-        
-        .debug-info {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            font-size: 0.9em;
-            color: #333;
-        }
     </style>
 </head>
 <body>
@@ -446,14 +480,20 @@
     <div class="game-container">
         <div class="header">
             <h1 class="title">משחק המתמטיקה של תבור 👑</h1>
-            <p class="subtitle">פיית המתמטיקה מזמינה אותך להרפתקה קסומה! ✨</p>
+            <p class="subtitle">פיית המתמטיקה מזמינה אותך להרפתקה של 10 רמות! ✨</p>
         </div>
         
         <div class="castle-progress" id="castleProgress">
-            <div class="castle-part" id="castle1">🏰</div>
-            <div class="castle-part" id="castle2">🏯</div>
-            <div class="castle-part" id="castle3">🗼</div>
-            <div class="castle-part" id="castle4">👑</div>
+            <div class="castle-part" id="castle1">🏰<div class="level-indicator">1</div></div>
+            <div class="castle-part" id="castle2">🏯<div class="level-indicator">2</div></div>
+            <div class="castle-part" id="castle3">🗼<div class="level-indicator">3</div></div>
+            <div class="castle-part" id="castle4">👑<div class="level-indicator">4</div></div>
+            <div class="castle-part" id="castle5">🎪<div class="level-indicator">5</div></div>
+            <div class="castle-part" id="castle6">🎡<div class="level-indicator">6</div></div>
+            <div class="castle-part" id="castle7">🎢<div class="level-indicator">7</div></div>
+            <div class="castle-part" id="castle8">🎠<div class="level-indicator">8</div></div>
+            <div class="castle-part" id="castle9">🎆<div class="level-indicator">9</div></div>
+            <div class="castle-part" id="castle10">👸<div class="level-indicator">10</div></div>
         </div>
         
         <div class="score-board">
@@ -466,7 +506,7 @@
                 <div class="score-label">רמה 🌟</div>
             </div>
             <div class="score-item">
-                <div class="score-number" id="correctAnswers">0/10</div>
+                <div class="score-number" id="correctAnswers">0/15</div>
                 <div class="score-label">נכונות 💜</div>
             </div>
         </div>
@@ -479,29 +519,41 @@
             <div class="menu-buttons">
                 <button class="menu-btn" onclick="startGame('numbers')">
                     🔢 מספרים טבעיים<br>
-                    <small>מספרים עד 1000, סדרות ועוד</small>
+                    <small>10 רמות מ-10 עד 1000</small>
                 </button>
                 <button class="menu-btn" onclick="startGame('operations')">
                     ➕ פעולות חשבון<br>
-                    <small>לוח כפל, חיבור וחיסור</small>
+                    <small>לוח כפל מדורג ב-10 רמות</small>
                 </button>
                 <button class="menu-btn" onclick="startGame('geometry')">
                     📐 גאומטריה<br>
-                    <small>זוויות ומשולשים קסומים</small>
+                    <small>זוויות ומשולשים ב-10 רמות</small>
                 </button>
+            </div>
+            <div style="margin-top: 30px; color: #8b5a96; font-size: 1.1em;">
+                <strong>מערכת רמות חדשה:</strong><br>
+                כל רמה = 15 שאלות | 10 רמות קושי מדורגות | התקדמות הדרגתית
             </div>
         </div>
         
         <!-- Game Screen -->
         <div class="game-screen hidden" id="gameScreen">
+            <div class="question-header">
+                <div class="current-level">רמה <span id="levelDisplay">1</span></div>
+                <div style="color: #8b5a96;">שאלה <span id="questionNumber">1</span> מתוך 15</div>
+            </div>
+            
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                <div class="progress-text" id="progressText">0%</div>
             </div>
             
             <div class="question-card" id="questionCard">
                 <div class="question-text" id="questionText">טוען שאלה...</div>
                 <div id="questionImage"></div>
-                <div class="answers-grid" id="answersGrid"></div>
+                <div class="answers-grid" id="answersGrid">
+                    <!-- Answers will be populated here -->
+                </div>
             </div>
             
             <div class="feedback" id="feedback"></div>
@@ -518,7 +570,7 @@
             <div id="resultMessage" style="font-size: 1.4em; margin: 20px 0;"></div>
             <div>
                 <button class="next-btn" onclick="showMenu()">תפריט ראשי 🏠</button>
-                <button class="next-btn" onclick="restartCurrentTopic()">עוד סיבוב 🔄</button>
+                <button class="next-btn" onclick="nextLevel()">רמה הבאה! 🚀</button>
             </div>
         </div>
     </div>
@@ -526,233 +578,390 @@
     <div class="fireworks" id="fireworks"></div>
 
     <script>
-        console.log('🎮 המשחק נטען...');
+        console.log('🎮 משחק המתמטיקה המתקדם של תבור נטען...');
         
         // Game State
         let gameState = {
             currentTopic: '',
+            currentLevel: 1,
             currentQuestion: 0,
             score: 0,
-            level: 1,
             correctAnswersInRow: 0,
             questions: []
         };
         
-        // Question Banks
-        const questionBanks = {
-            numbers: [
-                {
-                    question: "מה המספר שבא אחרי 547?",
-                    answers: ["546", "548", "549", "545"],
-                    correct: 1,
-                    tip: "המספר העוקב הוא המספר + 1"
-                },
-                {
-                    question: "איזה מספר הוא הגדול ביותר?",
-                    answers: ["234", "432", "324", "243"],
-                    correct: 1,
-                    tip: "נסתכל על המאיות קודם!"
-                },
-                {
-                    question: "מה המספר החסר: 100, 200, ___, 400",
-                    answers: ["250", "300", "350", "290"],
-                    correct: 1,
-                    tip: "הסדרה עולה ב-100 כל פעם"
-                },
-                {
-                    question: "כמה עשרות יש במספר 450?",
-                    answers: ["4", "5", "45", "50"],
-                    correct: 2,
-                    tip: "עשרות זה המקום השני מימין"
-                },
-                {
-                    question: "איזה מספר קטן ב-1 מ-1000?",
-                    answers: ["999", "1001", "900", "990"],
-                    correct: 0,
-                    tip: "המספר הקודם הוא המספר - 1"
-                },
-                {
-                    question: "מה המספר שבין 299 ל-301?",
-                    answers: ["298", "300", "302", "299"],
-                    correct: 1,
-                    tip: "המספר שבין 299 ל-301 הוא 300"
-                },
-                {
-                    question: "איזה מספר הכי קטן?",
-                    answers: ["567", "576", "657", "675"],
-                    correct: 0,
-                    tip: "נשווה ספרה אחר ספרה מהשמאל"
-                },
-                {
-                    question: "כמה מאות יש ב-789?",
-                    answers: ["7", "8", "9", "78"],
-                    correct: 0,
-                    tip: "המאות הן הספרה הראשונה משמאל"
-                },
-                {
-                    question: "מה המספר החסר: 50, 60, 70, ___",
-                    answers: ["75", "80", "85", "90"],
-                    correct: 1,
-                    tip: "הסדרה עולה בעשרות"
-                },
-                {
-                    question: "איזה מספר גדול יותר מ-500 אבל קטן מ-520?",
-                    answers: ["495", "510", "525", "530"],
-                    correct: 1,
-                    tip: "510 נמצא בין 500 ל-520"
-                }
-            ],
-            operations: [
-                {
-                    question: "כמה זה <span class='math-text'>7 × 8</span>? 💫",
-                    answers: ["54", "56", "64", "48"],
-                    correct: 1,
-                    tip: "שבעה כפול שמונה = כמו 7 נסיכות עם 8 כוכבים כל אחת!"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>9 × 6</span>? ✨",
-                    answers: ["54", "48", "56", "42"],
-                    correct: 0,
-                    tip: "תשעה כפול שישה = כמו 9 ארמונות עם 6 חדרים כל אחד!"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>45 + 28</span>?",
-                    answers: ["63", "73", "71", "83"],
-                    correct: 1,
-                    tip: "ארבעים וחמישה ועוד עשרים ושמונה = שבעים ושלושה!"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>5 × 4</span>? 🌟",
-                    answers: ["15", "20", "25", "16"],
-                    correct: 1,
-                    tip: "חמישה כפול ארבעה = כמו 4 ידיים עם 5 אצבעות!"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>72 ÷ 8</span>?",
-                    answers: ["8", "9", "7", "10"],
-                    correct: 1,
-                    tip: "שבעים ושניים חלקי שמונה = כמה פעמים שמונה נכנס בשבעים ושניים?"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>6 × 6</span>? 👑",
-                    answers: ["32", "36", "42", "30"],
-                    correct: 1,
-                    tip: "שישה כפול שישה = כמו 6 נסיכות עם 6 כתרים!"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>8 × 7</span>? 🎆",
-                    answers: ["54", "56", "48", "64"],
-                    correct: 1,
-                    tip: "שמונה כפול שבעה = אותו דבר כמו שבעה כפול שמונה!"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>63 ÷ 7</span>?",
-                    answers: ["8", "9", "7", "6"],
-                    correct: 1,
-                    tip: "שישים ושלושה חלקי שבעה = כמה פעמים שבעה נכנס בשישים ושלושה?"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>56 - 18</span>?",
-                    answers: ["38", "42", "36", "44"],
-                    correct: 0,
-                    tip: "חמישים ושישה פחות שמונה עשר = שלושים ושמונה!"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>4 × 9</span>? ✨",
-                    answers: ["32", "36", "40", "35"],
-                    correct: 1,
-                    tip: "ארבעה כפול תשעה = שלושים ושישה!"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>3 × 8</span>? 🌟",
-                    answers: ["21", "24", "27", "18"],
-                    correct: 1,
-                    tip: "שלושה כפול שמונה = עשרים וארבעה!"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>48 ÷ 6</span>?",
-                    answers: ["6", "7", "8", "9"],
-                    correct: 2,
-                    tip: "ארבעים ושמונה חלקי שישה = שמונה!"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>67 + 25</span>?",
-                    answers: ["82", "92", "91", "85"],
-                    correct: 1,
-                    tip: "שישים ושבעה ועוד עשרים וחמישה = תשעים ושניים!"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>81 - 27</span>?",
-                    answers: ["54", "56", "52", "58"],
-                    correct: 0,
-                    tip: "שמונים ואחד פחות עשרים ושבעה = חמישים וארבעה!"
-                },
-                {
-                    question: "כמה זה <span class='math-text'>7 × 9</span>? 💜",
-                    answers: ["56", "63", "72", "54"],
-                    correct: 1,
-                    tip: "שבעה כפול תשעה = שישים ושלושה!"
-                }
-            ],
-            geometry: [
-                {
-                    question: "איזה סוג זווית זה? (פחות מ-90 מעלות)",
-                    image: "🔺",
-                    answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
-                    correct: 0,
-                    tip: "זווית חדה היא זווית קטנה מ-90 מעלות"
-                },
-                {
-                    question: "איזה סוג זווית זה? (בדיוק 90 מעלות)",
-                    image: "📐",
-                    answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
-                    correct: 1,
-                    tip: "זווית ישרה היא זווית של 90 מעלות בדיוק"
-                },
-                {
-                    question: "איזה סוג זווית זה? (יותר מ-90 מעלות)",
-                    image: "📏",
-                    answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
-                    correct: 2,
-                    tip: "זווית קהה היא זווית גדולה מ-90 מעלות"
-                },
-                {
-                    question: "איזה משולש זה לפי הזוויות? (יש זווית של 90 מעלות)",
-                    image: "📐△",
-                    answers: ["משולש חד זווית", "משולש ישר זווית", "משולש קהה זווית", "משולש שווה צלעות"],
-                    correct: 1,
-                    tip: "משולש ישר זווית יש בו זווית של 90 מעלות"
-                },
-                {
-                    question: "איזה משולש זה לפי הזוויות? (כל הזוויות קטנות מ-90 מעלות)",
-                    image: "🔺",
-                    answers: ["משולש חד זווית", "משולש ישר זווית", "משולש קהה זווית", "משולש שווה צלעות"],
-                    correct: 0,
-                    tip: "משולש חד זווית - כל הזוויות קטנות מ-90 מעלות"
-                },
-                {
-                    question: "איזה משולש זה לפי הזוויות? (יש זווית גדולה מ-90 מעלות)",
-                    image: "📏△",
-                    answers: ["משולש חד זווית", "משולש ישר זווית", "משולש קהה זווית", "משולש שווה צלעות"],
-                    correct: 2,
-                    tip: "משולש קהה זווית יש בו זווית גדולה מ-90 מעלות"
-                },
-                {
-                    question: "איזו זווית הכי קטנה?",
-                    image: "📐🔺📏",
-                    answers: ["זווית ישרה", "זווית חדה", "זווית קהה", "זווית שטוחה"],
-                    correct: 1,
-                    tip: "זווית חדה היא הכי קטנה - פחות מ-90 מעלות"
-                },
-                {
-                    question: "איזו זווית הכי גדולה?",
-                    image: "📐🔺📏➡️",
-                    answers: ["זווית ישרה", "זווית חדה", "זווית קהה", "זווית שטוחה"],
-                    correct: 3,
-                    tip: "זווית שטוחה היא 180 מעלות - הכי גדולה!"
-                }
-            ]
+        // Question generators for different levels
+        const questionGenerators = {
+            numbers: {
+                1: () => generateNumberQuestions(1, 50, 'basic'),
+                2: () => generateNumberQuestions(1, 100, 'sequences'),
+                3: () => generateNumberQuestions(50, 200, 'comparison'),
+                4: () => generateNumberQuestions(100, 300, 'place_value'),
+                5: () => generateNumberQuestions(200, 500, 'advanced_sequences'),
+                6: () => generateNumberQuestions(300, 600, 'complex_comparison'),
+                7: () => generateNumberQuestions(400, 700, 'mixed_operations'),
+                8: () => generateNumberQuestions(500, 800, 'word_problems'),
+                9: () => generateNumberQuestions(600, 900, 'complex_patterns'),
+                10: () => generateNumberQuestions(700, 1000, 'master_level')
+            },
+            operations: {
+                1: () => generateMultiplicationQuestions([1, 2, 5, 10]),
+                2: () => generateMultiplicationQuestions([2, 3, 4, 5]),
+                3: () => generateMultiplicationQuestions([4, 5, 6, 7]),
+                4: () => generateMultiplicationQuestions([5, 6, 7, 8]),
+                5: () => generateMultiplicationQuestions([6, 7, 8, 9]),
+                6: () => generateMixedOperations('intermediate'),
+                7: () => generateMixedOperations('advanced'), 
+                8: () => generateComplexOperations(),
+                9: () => generateMasterOperations(),
+                10: () => generateUltimateOperations()
+            },
+            geometry: {
+                1: () => generateGeometryQuestions('basic_angles'),
+                2: () => generateGeometryQuestions('angle_types'),
+                3: () => generateGeometryQuestions('basic_triangles'),
+                4: () => generateGeometryQuestions('triangle_types'),
+                5: () => generateGeometryQuestions('angle_measurement'),
+                6: () => generateGeometryQuestions('triangle_properties'),
+                7: () => generateGeometryQuestions('mixed_shapes'),
+                8: () => generateGeometryQuestions('complex_angles'),
+                9: () => generateGeometryQuestions('advanced_triangles'),
+                10: () => generateGeometryQuestions('geometry_master')
+            }
         };
+
+        // Utility function to shuffle array and return correct index
+        function shuffleAnswers(answers, correctAnswer = null) {
+            // If correctAnswer is provided, find it in the array
+            if (correctAnswer !== null) {
+                const correctIndex = answers.indexOf(correctAnswer);
+                if (correctIndex === -1) {
+                    answers[0] = correctAnswer; // Ensure correct answer is in array
+                }
+            }
+            
+            const correct = correctAnswer || answers[0];
+            const shuffled = [...answers].sort(() => Math.random() - 0.5);
+            const newCorrectIndex = shuffled.indexOf(correct);
+            
+            return {
+                answers: shuffled,
+                correctIndex: newCorrectIndex
+            };
+        }
+
+        // Generate number questions based on level
+        function generateNumberQuestions(min, max, type) {
+            const questions = [];
+            
+            for (let i = 0; i < 15; i++) {
+                let question;
+                
+                switch(type) {
+                    case 'basic':
+                        question = generateBasicNumberQuestion(min, max);
+                        break;
+                    case 'sequences':
+                        question = generateSequenceQuestion(min, max);
+                        break;
+                    case 'comparison':
+                        question = generateComparisonQuestion(min, max);
+                        break;
+                    case 'place_value':
+                        question = generatePlaceValueQuestion(min, max);
+                        break;
+                    default:
+                        question = generateBasicNumberQuestion(min, max);
+                }
+                
+                questions.push(question);
+            }
+            
+            return questions;
+        }
+
+        // Generate basic number questions
+        function generateBasicNumberQuestion(min, max) {
+            const num = Math.floor(Math.random() * (max - min + 1)) + min;
+            const type = Math.floor(Math.random() * 3);
+            
+            switch(type) {
+                case 0: // Next number
+                    const nextAnswers = [num + 1, num - 1, num + 2, num - 2];
+                    const nextShuffled = shuffleAnswers(nextAnswers, num + 1);
+                    return {
+                        question: `מה המספר שבא אחרי ${num}?`,
+                        answers: nextShuffled.answers,
+                        correct: nextShuffled.correctIndex,
+                        tip: `המספר העוקב ל-${num} הוא ${num + 1}`
+                    };
+                    
+                case 1: // Previous number
+                    const prevAnswers = [num - 1, num + 1, num - 2, num + 2];
+                    const prevShuffled = shuffleAnswers(prevAnswers, num - 1);
+                    return {
+                        question: `מה המספר שבא לפני ${num}?`,
+                        answers: prevShuffled.answers,
+                        correct: prevShuffled.correctIndex,
+                        tip: `המספר הקודם ל-${num} הוא ${num - 1}`
+                    };
+                    
+                case 2: // Largest number
+                    const nums = [num, num + 10, num - 5, num + 15];
+                    const largest = Math.max(...nums);
+                    const largestShuffled = shuffleAnswers(nums.map(n => n.toString()), largest.toString());
+                    return {
+                        question: `איזה מספר הוא הגדול ביותר?`,
+                        answers: largestShuffled.answers,
+                        correct: largestShuffled.correctIndex,
+                        tip: `המספר הגדול ביותר הוא ${largest}`
+                    };
+            }
+        }
+
+        // Generate sequence questions
+        function generateSequenceQuestion(min, max) {
+            const start = Math.floor(Math.random() * (max - min - 20)) + min;
+            const step = [5, 10, 2, 3][Math.floor(Math.random() * 4)];
+            const sequence = [start, start + step, start + 2*step];
+            const missing = start + 3*step;
+            
+            const seqAnswers = [missing, missing + step, missing - step, missing + 5];
+            const seqShuffled = shuffleAnswers(seqAnswers.map(n => n.toString()), missing.toString());
+            
+            return {
+                question: `מה המספר החסר: ${sequence[0]}, ${sequence[1]}, ${sequence[2]}, ___`,
+                answers: seqShuffled.answers,
+                correct: seqShuffled.correctIndex,
+                tip: `הסדרה עולה ב-${step}, אז התשובה היא ${missing}`
+            };
+        }
+
+        // Generate multiplication questions by level
+        function generateMultiplicationQuestions(tables) {
+            const questions = [];
+            
+            for (let i = 0; i < 15; i++) {
+                const table = tables[Math.floor(Math.random() * tables.length)];
+                const multiplier = Math.floor(Math.random() * 9) + 1;
+                const result = table * multiplier;
+                
+                const wrongAnswers = [
+                    result + table,
+                    result - table, 
+                    result + multiplier
+                ];
+                
+                const multAnswers = [result, ...wrongAnswers];
+                const multShuffled = shuffleAnswers(multAnswers.map(n => n.toString()), result.toString());
+                
+                questions.push({
+                    question: `כמה זה <span class='math-text'>${table} × ${multiplier}</span>? ✨`,
+                    answers: multShuffled.answers,
+                    correct: multShuffled.correctIndex,
+                    tip: `${table} כפול ${multiplier} = ${result}. טיפ: ${getMultiplicationTip(table, multiplier)}`
+                });
+            }
+            
+            return questions;
+        }
+
+        // Generate geometry questions by type
+        function generateGeometryQuestions(type) {
+            const questions = [];
+            
+            const templates = {
+                basic_angles: [
+                    {
+                        question: "איזה סוג זווית זה? (פחות מ-90 מעלות)",
+                        image: "🔺",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 0,
+                        tip: "זווית חדה קטנה מ-90 מעלות"
+                    },
+                    {
+                        question: "איזה סוג זווית זה? (בדיוק 90 מעלות)",
+                        image: "📐",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 1,
+                        tip: "זווית ישרה היא בדיוק 90 מעלות"
+                    },
+                    {
+                        question: "איזה סוג זווית זה? (יותר מ-90 מעלות)",
+                        image: "📏",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 2,
+                        tip: "זווית קהה גדולה מ-90 מעלות"
+                    }
+                ],
+                angle_types: [
+                    {
+                        question: "כמה מעלות יש בזווית ישרה?",
+                        answers: ["90", "180", "45", "360"],
+                        correct: 0,
+                        tip: "זווית ישרה = 90 מעלות תמיד"
+                    },
+                    {
+                        question: "איזו זווית גדולה מ-90 מעלות אבל קטנה מ-180?",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 2,
+                        tip: "זווית קהה נמצאת בין 90 ל-180 מעלות"
+                    }
+                ]
+            };
+            
+            const typeQuestions = templates[type] || templates.basic_angles;
+            
+            for (let i = 0; i < 15; i++) {
+                const baseQuestion = typeQuestions[i % typeQuestions.length];
+                const variation = generateGeometryVariation(baseQuestion, type, i);
+                questions.push(variation);
+            }
+            
+            return questions;
+        }
+
+        // Additional generator functions
+        function generateComparisonQuestion(min, max) {
+            return generateBasicNumberQuestion(min, max);
+        }
+
+        function generatePlaceValueQuestion(min, max) {
+            const num = Math.floor(Math.random() * (max - min + 1)) + min;
+            const digits = num.toString();
+            const place = Math.floor(Math.random() * digits.length);
+            const placeName = ['אחדות', 'עשרות', 'מאות'][digits.length - 1 - place] || 'אחדות';
+            
+            const placeAnswers = [
+                digits[place],
+                digits[(place + 1) % digits.length] || '0',
+                digits[(place + 2) % digits.length] || '0',
+                (parseInt(digits[place]) + 1).toString()
+            ];
+            
+            const placeShuffled = shuffleAnswers(placeAnswers, digits[place]);
+            
+            return {
+                question: `כמה ${placeName} יש במספר ${num}?`,
+                answers: placeShuffled.answers,
+                correct: placeShuffled.correctIndex,
+                tip: `במספר ${num}, ב${placeName} יש ${digits[place]}`
+            };
+        }
+
+        function generateMixedOperations(level) {
+            const questions = [];
+            
+            for (let i = 0; i < 15; i++) {
+                const operations = level === 'intermediate' ? 
+                    ['addition', 'subtraction', 'multiplication'] :
+                    ['addition', 'subtraction', 'multiplication', 'division'];
+                
+                const op = operations[Math.floor(Math.random() * operations.length)];
+                questions.push(generateOperationQuestion(op, level));
+            }
+            
+            return questions;
+        }
+
+        function generateOperationQuestion(operation, level) {
+            let a, b, result, question, tip;
+            
+            const range = level === 'intermediate' ? [10, 50] : [20, 100];
+            
+            switch(operation) {
+                case 'addition':
+                    a = Math.floor(Math.random() * range[1]) + range[0];
+                    b = Math.floor(Math.random() * range[1]) + range[0];
+                    result = a + b;
+                    question = `כמה זה <span class='math-text'>${a} + ${b}</span>?`;
+                    tip = `${a} ועוד ${b} שווה ${result}`;
+                    break;
+                    
+                case 'subtraction':
+                    result = Math.floor(Math.random() * range[1]) + range[0];
+                    b = Math.floor(Math.random() * result);
+                    a = result + b;
+                    question = `כמה זה <span class='math-text'>${a} - ${b}</span>?`;
+                    tip = `${a} פחות ${b} שווה ${result}`;
+                    break;
+                    
+                case 'multiplication':
+                    a = Math.floor(Math.random() * 9) + 2;
+                    b = Math.floor(Math.random() * 9) + 2;
+                    result = a * b;
+                    question = `כמה זה <span class='math-text'>${a} × ${b}</span>? 🌟`;
+                    tip = `${a} כפול ${b} שווה ${result}`;
+                    break;
+                    
+                case 'division':
+                    result = Math.floor(Math.random() * 10) + 2;
+                    b = Math.floor(Math.random() * 8) + 2;
+                    a = result * b;
+                    question = `כמה זה <span class='math-text'>${a} ÷ ${b}</span>?`;
+                    tip = `${a} חלקי ${b} שווה ${result}`;
+                    break;
+            }
+            
+            const wrongAnswers = [
+                result + 1,
+                result - 1,
+                result + Math.floor(Math.random() * 5) + 2
+            ];
+            
+            const opAnswers = [result, ...wrongAnswers];
+            const opShuffled = shuffleAnswers(opAnswers.map(n => n.toString()), result.toString());
+            
+            return {
+                question,
+                answers: opShuffled.answers,
+                correct: opShuffled.correctIndex,
+                tip
+            };
+        }
+
+        function generateComplexOperations() {
+            return generateMixedOperations('advanced');
+        }
+
+        function generateMasterOperations() {
+            return generateMixedOperations('advanced');
+        }
+
+        function generateUltimateOperations() {
+            return generateMixedOperations('advanced');
+        }
+
+        function getMultiplicationTip(a, b) {
+            const tips = [
+                `חשבי על ${a} קבוצות של ${b}`,
+                `כמו ${b} פעמים ${a}`,
+                `ספרי בקפיצות של ${a}`
+            ];
+            return tips[Math.floor(Math.random() * tips.length)];
+        }
+
+        function generateGeometryVariation(base, type, index) {
+            const variation = {...base};
+            
+            if (type.includes('angles')) {
+                const angles = ['חדה', 'ישרה', 'קהה', 'שטוחה'];
+                const degrees = ['30°', '90°', '120°', '180°'];
+                const emojis = ['🔺', '📐', '📏', '➡️'];
+                
+                const angleType = index % 4;
+                variation.question = `איזו זווית של ${degrees[angleType]} היא זווית...?`;
+                
+                const angleAnswers = [`זווית ${angles[angleType]}`, ...angles.filter(a => a !== angles[angleType]).slice(0, 3)];
+                const angleShuffled = shuffleAnswers(angleAnswers, `זווית ${angles[angleType]}`);
+                
+                variation.answers = angleShuffled.answers;
+                variation.correct = angleShuffled.correctIndex;
+                variation.image = emojis[angleType];
+            }
+            
+            return variation;
+        }
 
         // Positive feedback messages
         const positiveFeedback = [
@@ -761,7 +970,9 @@
             "מדהים תבור! את פשוט נפלאה! ✨",
             "בדיוק נכון! את מושלמת! 💜",
             "וואו תבור! איזו תשובה נפלאה! 🌟",
-            "מצוין! הטירה שלך גדלה! 🏰"
+            "מצוין! הטירה שלך גדלה! 🏰",
+            "תבור גאונית! רמה הבאה מחכה! 🚀",
+            "פנטסטי! את מתקדמת בצורה מושלמת! 💫"
         ];
 
         // Negative feedback messages
@@ -769,17 +980,19 @@
             "לא נורא תבור, ננסה שוב! את יכולה! 💜",
             "כמעט הגעת! בואי ננסה פעם נוספת 🌟",
             "זה בסדר לטעות, זה איך לומדים! בואי שוב! ✨",
-            "תבור, את חכמה ויכולה! עוד נסיון! 👑"
+            "תבור, את חכמה ויכולה! עוד נסיון! 👑",
+            "לא בדיוק, אבל את בדרך הנכונה! 💖",
+            "כמעט! בואי נחשוב יחד על זה 🤔"
         ];
 
         // Initialize game
         function initGame() {
-            console.log('🎯 מתחיל אתחול המשחק...');
+            console.log('🎯 מתחיל אתחול המשחק המתקדם...');
             try {
                 createStars();
                 loadGameState();
                 updateDisplay();
-                console.log('✅ המשחק נטען בהצלחה!');
+                console.log('✅ המשחק המתקדם נטען בהצלחה!');
             } catch (error) {
                 console.error('❌ שגיאה באתחול המשחק:', error);
             }
@@ -789,7 +1002,7 @@
         function createStars() {
             console.log('⭐ יוצר כוכבים...');
             const starsContainer = document.getElementById('stars');
-            starsContainer.innerHTML = ''; // Clear existing stars
+            starsContainer.innerHTML = '';
             
             for (let i = 0; i < 50; i++) {
                 const star = document.createElement('div');
@@ -804,26 +1017,27 @@
 
         // Start game with selected topic
         function startGame(topic) {
-            console.log('🎮 מתחיל משחק בנושא:', topic);
+            console.log(`🎮 מתחיל משחק בנושא: ${topic}, רמה: ${gameState.currentLevel}`);
             
             try {
-                // Validate topic
-                if (!questionBanks[topic]) {
-                    console.error('❌ נושא לא תקין:', topic);
-                    return;
-                }
-                
-                // Reset game state
                 gameState.currentTopic = topic;
                 gameState.currentQuestion = 0;
-                gameState.questions = shuffleArray([...questionBanks[topic]]);
+                gameState.correctAnswersInRow = 0;
                 
-                console.log(`📝 נטענו ${gameState.questions.length} שאלות לנושא ${topic}`);
+                // Generate questions for current level
+                const generator = questionGenerators[topic][gameState.currentLevel];
+                gameState.questions = generator ? generator() : [];
+                
+                console.log(`📝 נוצרו ${gameState.questions.length} שאלות לרמה ${gameState.currentLevel}`);
+                console.log('דוגמה לשאלה:', gameState.questions[0]);
                 
                 // Show game screen
                 document.getElementById('menuScreen').classList.add('hidden');
                 document.getElementById('gameScreen').classList.remove('hidden');
                 document.getElementById('resultScreen').classList.add('hidden');
+                
+                // Update level display
+                document.getElementById('levelDisplay').textContent = gameState.currentLevel;
                 
                 // Show first question
                 showQuestion();
@@ -835,60 +1049,47 @@
 
         // Show current question
         function showQuestion() {
-            console.log('❓ מציג שאלה מספר:', gameState.currentQuestion + 1);
+            console.log(`❓ מציג שאלה ${gameState.currentQuestion + 1}/15 ברמה ${gameState.currentLevel}`);
             
             try {
-                // Validate question exists
                 if (!gameState.questions || gameState.currentQuestion >= gameState.questions.length) {
-                    console.error('❌ לא נמצאו שאלות או אין עוד שאלות');
+                    console.log('🏁 סיום הרמה');
                     showResults();
                     return;
                 }
                 
                 const question = gameState.questions[gameState.currentQuestion];
-                console.log('📋 השאלה הנוכחית:', question.question);
+                console.log('📋 השאלה:', question);
                 
                 // Update question text
-                const questionTextElement = document.getElementById('questionText');
-                if (!questionTextElement) {
-                    console.error('❌ לא נמצא אלמנט השאלה');
-                    return;
-                }
-                
-                questionTextElement.innerHTML = question.question;
+                document.getElementById('questionText').innerHTML = question.question;
+                document.getElementById('questionNumber').textContent = gameState.currentQuestion + 1;
                 
                 // Hide next button and feedback
-                const nextBtn = document.getElementById('nextBtn');
-                const feedback = document.getElementById('feedback');
-                if (nextBtn) nextBtn.classList.add('hidden');
-                if (feedback) feedback.classList.remove('show');
+                document.getElementById('nextBtn').classList.add('hidden');
+                document.getElementById('feedback').classList.remove('show');
                 
                 // Show image if exists
                 const imageContainer = document.getElementById('questionImage');
-                if (imageContainer) {
-                    if (question.image) {
-                        imageContainer.innerHTML = `<div style="font-size: 4em; margin: 20px 0;">${question.image}</div>`;
-                    } else {
-                        imageContainer.innerHTML = '';
-                    }
+                if (question.image) {
+                    imageContainer.innerHTML = `<div style="font-size: 4em; margin: 20px 0;">${question.image}</div>`;
+                } else {
+                    imageContainer.innerHTML = '';
                 }
                 
                 // Create answer buttons
                 const answersGrid = document.getElementById('answersGrid');
-                if (!answersGrid) {
-                    console.error('❌ לא נמצא אלמנט התשובות');
-                    return;
-                }
-                
                 answersGrid.innerHTML = '';
+                
+                console.log('🔘 יוצר כפתורי תשובות:', question.answers);
                 
                 question.answers.forEach((answer, index) => {
                     const btn = document.createElement('button');
                     btn.className = 'answer-btn';
-                    btn.innerHTML = answer; // Using innerHTML to support HTML in answers
+                    btn.innerHTML = answer;
                     btn.onclick = () => selectAnswer(index);
                     answersGrid.appendChild(btn);
-                    console.log(`🔘 נוצר כפתור תשובה ${index + 1}: ${answer}`);
+                    console.log(`כפתור ${index}: ${answer}`);
                 });
                 
                 updateProgress();
@@ -913,7 +1114,6 @@
                 if (selectedIndex === question.correct) {
                     console.log('✅ תשובה נכונה!');
                     
-                    // Correct answer
                     buttons[selectedIndex].classList.add('correct');
                     gameState.score += 10;
                     gameState.correctAnswersInRow++;
@@ -921,18 +1121,11 @@
                     showFeedback(true, positiveFeedback[Math.floor(Math.random() * positiveFeedback.length)]);
                     createFireworks();
                     
-                    // Check for level up
-                    if (gameState.correctAnswersInRow >= 10) {
-                        levelUp();
-                    }
-                    
                 } else {
-                    console.log('❌ תשובה שגויה. התשובה הנכונה:', question.correct);
+                    console.log('❌ תשובה שגויה');
                     
-                    // Incorrect answer
                     buttons[selectedIndex].classList.add('incorrect');
                     buttons[question.correct].classList.add('correct');
-                    gameState.correctAnswersInRow = Math.max(0, gameState.correctAnswersInRow - 1);
                     
                     showFeedback(false, negativeFeedback[Math.floor(Math.random() * negativeFeedback.length)] + '<br><small>' + question.tip + '</small>');
                 }
@@ -941,8 +1134,7 @@
                 
                 // Show next button after delay
                 setTimeout(() => {
-                    const nextBtn = document.getElementById('nextBtn');
-                    if (nextBtn) nextBtn.classList.remove('hidden');
+                    document.getElementById('nextBtn').classList.remove('hidden');
                 }, 2000);
                 
             } catch (error) {
@@ -954,10 +1146,8 @@
         function showFeedback(isPositive, message) {
             try {
                 const feedback = document.getElementById('feedback');
-                if (feedback) {
-                    feedback.innerHTML = message;
-                    feedback.className = 'feedback show ' + (isPositive ? 'positive' : 'negative');
-                }
+                feedback.innerHTML = message;
+                feedback.className = 'feedback show ' + (isPositive ? 'positive' : 'negative');
             } catch (error) {
                 console.error('❌ שגיאה בהצגת משוב:', error);
             }
@@ -986,40 +1176,6 @@
             }
         }
 
-        // Level up animation
-        function levelUp() {
-            try {
-                gameState.level++;
-                gameState.correctAnswersInRow = 0;
-                
-                const notification = document.createElement('div');
-                notification.className = 'level-up-notification';
-                notification.innerHTML = `🏰 עלית לרמה ${gameState.level}! 🏰<br><small>הטירה שלך גדלה!</small>`;
-                document.body.appendChild(notification);
-                
-                setTimeout(() => notification.remove(), 2000);
-                
-                updateCastle();
-                console.log('📈 עלייה לרמה:', gameState.level);
-            } catch (error) {
-                console.error('❌ שגיאה בעלייה לרמה:', error);
-            }
-        }
-
-        // Update castle display
-        function updateCastle() {
-            try {
-                const castleParts = document.querySelectorAll('.castle-part');
-                castleParts.forEach((part, index) => {
-                    if (index < gameState.level) {
-                        part.classList.add('built');
-                    }
-                });
-            } catch (error) {
-                console.error('❌ שגיאה בעדכון הטירה:', error);
-            }
-        }
-
         // Next question
         function nextQuestion() {
             console.log('➡️ עובר לשאלה הבאה...');
@@ -1027,8 +1183,8 @@
             try {
                 gameState.currentQuestion++;
                 
-                if (gameState.currentQuestion >= gameState.questions.length) {
-                    console.log('🏁 סיום המשחק - מציג תוצאות');
+                if (gameState.currentQuestion >= 15) {
+                    console.log('🏁 סיום הרמה');
                     showResults();
                 } else {
                     showQuestion();
@@ -1044,20 +1200,35 @@
                 document.getElementById('gameScreen').classList.add('hidden');
                 document.getElementById('resultScreen').classList.remove('hidden');
                 
-                const totalPossibleScore = gameState.questions.length * 10;
-                const percentage = Math.round((gameState.score / totalPossibleScore) * 100);
+                const percentage = Math.round((gameState.correctAnswersInRow / 15) * 100);
                 
-                document.getElementById('resultTitle').textContent = 
-                    percentage >= 80 ? 'תבור המדהימה! 👑' :
-                    percentage >= 60 ? 'כל הכבוד תבור! ⭐' :
-                    'תבור, את בדרך הנכונה! 💜';
+                let title, message;
                 
-                document.getElementById('resultMessage').innerHTML = 
-                    `צברת ${gameState.score} כוכבים מתוך ${totalPossibleScore}!<br>
-                    השגת ${percentage}% נכונות<br>
-                    ${percentage >= 80 ? 'את מוכנה מעולה למבחן! 🌟' : 
-                      percentage >= 60 ? 'עוד קצת תרגול ותהיי מושלמת! ✨' : 
-                      'בואי נתרגל עוד קצת יחד! 💫'}`;
+                if (percentage >= 80) {
+                    title = 'תבור המדהימה! עלית לרמה הבאה! 👑🚀';
+                    message = `מעולה! השגת ${percentage}% נכונות!<br>
+                              צברת ${gameState.correctAnswersInRow} תשובות נכונות מתוך 15<br>
+                              🌟 רמה ${gameState.currentLevel} הושלמה בהצלחה! 🌟<br>
+                              מוכנה לרמה ${gameState.currentLevel + 1}?`;
+                    
+                    // Level up if score is good enough
+                    if (gameState.currentLevel < 10) {
+                        levelUp();
+                    }
+                } else if (percentage >= 60) {
+                    title = 'כל הכבוד תבור! ⭐';
+                    message = `טוב מאוד! השגת ${percentage}% נכונות<br>
+                              צברת ${gameState.correctAnswersInRow} תשובות נכונות מתוך 15<br>
+                              עוד קצת תרגול ותעלי לרמה הבאה! 💪`;
+                } else {
+                    title = 'תבור, את בדרך הנכונה! 💜';
+                    message = `השגת ${percentage}% נכונות<br>
+                              צברת ${gameState.correctAnswersInRow} תשובות נכונות מתוך 15<br>
+                              בואי נתרגל עוד קצת ברמה הזו! 📚`;
+                }
+                
+                document.getElementById('resultTitle').innerHTML = title;
+                document.getElementById('resultMessage').innerHTML = message;
                       
                 console.log('📊 תוצאות:', percentage + '% נכונות');
             } catch (error) {
@@ -1065,14 +1236,57 @@
             }
         }
 
+        // Level up
+        function levelUp() {
+            try {
+                if (gameState.currentLevel < 10) {
+                    gameState.currentLevel++;
+                    
+                    const notification = document.createElement('div');
+                    notification.className = 'level-up-notification';
+                    notification.innerHTML = `🏰 עלית לרמה ${gameState.currentLevel}! 🏰<br>
+                                            <small>הטירה שלך גדלה!<br>אתגרים חדשים מחכים!</small>`;
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => notification.remove(), 3000);
+                    
+                    updateCastle();
+                    console.log('📈 עלייה לרמה:', gameState.currentLevel);
+                }
+            } catch (error) {
+                console.error('❌ שגיאה בעלייה לרמה:', error);
+            }
+        }
+
+        // Update castle display
+        function updateCastle() {
+            try {
+                const castleParts = document.querySelectorAll('.castle-part');
+                castleParts.forEach((part, index) => {
+                    if (index < gameState.currentLevel) {
+                        part.classList.add('built');
+                    }
+                });
+            } catch (error) {
+                console.error('❌ שגיאה בעדכון הטירה:', error);
+            }
+        }
+
+        // Next level function
+        function nextLevel() {
+            if (gameState.currentTopic && gameState.currentLevel <= 10) {
+                startGame(gameState.currentTopic);
+            } else {
+                showMenu();
+            }
+        }
+
         // Update progress bar
         function updateProgress() {
             try {
-                const progress = ((gameState.currentQuestion + 1) / gameState.questions.length) * 100;
-                const progressFill = document.getElementById('progressFill');
-                if (progressFill) {
-                    progressFill.style.width = progress + '%';
-                }
+                const progress = ((gameState.currentQuestion + 1) / 15) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+                document.getElementById('progressText').textContent = Math.round(progress) + '%';
             } catch (error) {
                 console.error('❌ שגיאה בעדכון התקדמות:', error);
             }
@@ -1081,13 +1295,9 @@
         // Update display
         function updateDisplay() {
             try {
-                const currentScore = document.getElementById('currentScore');
-                const currentLevel = document.getElementById('currentLevel');
-                const correctAnswers = document.getElementById('correctAnswers');
-                
-                if (currentScore) currentScore.textContent = gameState.score;
-                if (currentLevel) currentLevel.textContent = gameState.level;
-                if (correctAnswers) correctAnswers.textContent = `${gameState.correctAnswersInRow}/10`;
+                document.getElementById('currentScore').textContent = gameState.score;
+                document.getElementById('currentLevel').textContent = gameState.currentLevel;
+                document.getElementById('correctAnswers').textContent = `${gameState.correctAnswersInRow}/15`;
                 
                 updateCastle();
                 saveGameState();
@@ -1108,39 +1318,14 @@
             }
         }
 
-        // Restart current topic
-        function restartCurrentTopic() {
-            try {
-                if (gameState.currentTopic) {
-                    console.log('🔄 מתחיל מחדש את הנושא:', gameState.currentTopic);
-                    startGame(gameState.currentTopic);
-                } else {
-                    showMenu();
-                }
-            } catch (error) {
-                console.error('❌ שגיאה בהתחלה מחדש:', error);
-            }
-        }
-
-        // Utility function to shuffle array
-        function shuffleArray(array) {
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled;
-        }
-
         // Save game state to localStorage
         function saveGameState() {
             try {
                 const gameData = {
                     score: gameState.score,
-                    level: gameState.level,
-                    correctAnswersInRow: gameState.correctAnswersInRow
+                    currentLevel: gameState.currentLevel
                 };
-                localStorage.setItem('tavorMathGame', JSON.stringify(gameData));
+                localStorage.setItem('tavorMathGameAdvanced', JSON.stringify(gameData));
             } catch (error) {
                 console.error('❌ שגיאה בשמירת המשחק:', error);
             }
@@ -1149,12 +1334,11 @@
         // Load game state from localStorage
         function loadGameState() {
             try {
-                const saved = localStorage.getItem('tavorMathGame');
+                const saved = localStorage.getItem('tavorMathGameAdvanced');
                 if (saved) {
                     const data = JSON.parse(saved);
                     gameState.score = data.score || 0;
-                    gameState.level = data.level || 1;
-                    gameState.correctAnswersInRow = data.correctAnswersInRow || 0;
+                    gameState.currentLevel = data.currentLevel || 1;
                     console.log('💾 נטען מצב שמור:', data);
                 }
             } catch (error) {
@@ -1164,21 +1348,18 @@
 
         // Initialize the game when page loads
         window.addEventListener('load', function() {
-            console.log('🌟 הדף נטען - מתחיל את המשחק...');
+            console.log('🌟 הדף נטען - מתחיל את המשחק המתקדם...');
             initGame();
         });
         
-        // Also try immediate initialization in case load event already passed
         if (document.readyState === 'complete') {
             console.log('📄 המסמך כבר מוכן - מתחיל מיידי');
             initGame();
         }
         
-        // Global error handler
         window.addEventListener('error', function(e) {
             console.error('🚨 שגיאה כללית:', e.error);
         });
     </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
