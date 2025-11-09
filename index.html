@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>משחק המתמטיקה של תבור 👑</title>
+    <title>פיית המתמטיקה של תבור 🧚‍♀️👑</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@300;400;700&display=swap');
         
@@ -78,43 +78,24 @@
             margin-bottom: 20px;
         }
         
-        .castle-progress {
-            display: flex;
-            justify-content: center;
-            align-items: end;
-            margin: 20px 0;
-            height: 120px;
-        }
-        
-        .castle-part {
-            margin: 0 3px;
-            font-size: 2em;
-            opacity: 0.3;
-            transition: all 0.5s ease;
-            position: relative;
-        }
-        
-        .castle-part.built {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-        
-        .level-indicator {
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #ffd700;
-            color: #8b5a96;
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-size: 0.5em;
-            font-weight: bold;
-            min-width: 30px;
+        .castle-display {
             text-align: center;
+            margin: 20px 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            animation: bounce 2s infinite;
         }
         
-        .score-board {
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        .progress-display {
             display: flex;
             justify-content: center;
             gap: 30px;
@@ -122,7 +103,7 @@
             flex-wrap: wrap;
         }
         
-        .score-item {
+        .progress-item {
             background: rgba(255, 255, 255, 0.9);
             border-radius: 25px;
             padding: 15px 25px;
@@ -132,220 +113,262 @@
             min-width: 120px;
         }
         
-        .score-number {
+        .progress-number {
             font-size: 1.8em;
             font-weight: bold;
             color: #8b5a96;
         }
         
-        .score-label {
+        .progress-label {
             font-size: 0.9em;
-            color: #666;
-            margin-top: 5px;
+            color: #d63384;
+            font-weight: bold;
+        }
+
+        /* מסכי המשחק */
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
         }
         
-        .menu-screen, .game-screen, .result-screen {
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* כפתורי תפריט */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .menu-button {
+            background: linear-gradient(135deg, #ff6b8a, #4ecdc4, #45b7d1);
+            border: none;
+            border-radius: 25px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .menu-button:hover:before {
+            left: 100%;
+        }
+        
+        .menu-button:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .menu-button.subject-button {
+            min-height: 120px;
+        }
+        
+        .button-title {
+            font-size: 1.4em;
+            margin-bottom: 8px;
+        }
+        
+        .button-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+        
+        .back-button {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            margin-bottom: 20px;
+            padding: 15px 25px;
+            font-size: 1em;
+        }
+        
+        /* אזור המשחק */
+        .game-board {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 30px;
-            padding: 40px;
+            padding: 30px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            text-align: center;
-            border: 5px solid #ffd700;
-        }
-        
-        .menu-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-        
-        .menu-btn {
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-            border: none;
-            border-radius: 20px;
-            padding: 30px 20px;
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #8b5a96;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            border: 3px solid #ffd700;
-        }
-        
-        .menu-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
-        }
-        
-        .question-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 25px;
-            padding: 40px;
-            margin: 20px 0;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.1);
             border: 4px solid #ffd700;
-            animation: slideInUp 0.6s ease-out;
-            min-height: 350px;
+            margin-top: 20px;
         }
         
-        .question-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 1.1em;
-            color: #8b5a96;
-        }
-        
-        .current-level {
-            background: linear-gradient(135deg, #8b5a96 0%, #ce93d8 100%);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 15px;
-            font-weight: bold;
+        .question-container {
+            background: linear-gradient(135deg, #ffeef8, #f8f9ff);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #ff6b8a;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         
         .question-text {
-            font-size: 1.8em;
+            font-size: 1.4em;
             color: #8b5a96;
-            margin-bottom: 30px;
-            line-height: 1.4;
             font-weight: bold;
-        }
-        
-        .question-image {
-            max-width: 100%;
-            height: auto;
-            margin: 20px 0;
-            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 25px;
+            line-height: 1.5;
         }
         
         .answers-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin-top: 30px;
+            margin-bottom: 20px;
         }
         
-        .answer-btn {
-            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-            border: 3px solid #9c27b0;
-            border-radius: 15px;
-            padding: 20px 15px;
-            font-size: 1.2em;
+        .answer-button {
+            background: linear-gradient(135deg, #ffeef8, #f8f9ff);
+            border: 3px solid #ff6b8a;
+            border-radius: 20px;
+            padding: 20px;
+            font-size: 1.1em;
             font-weight: bold;
             color: #8b5a96;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-align: center;
             min-height: 70px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        .answer-btn:hover {
-            background: linear-gradient(135deg, #ce93d8 0%, #f8bbd9 100%);
-            transform: scale(1.05);
-        }
-        
-        .answer-btn.correct {
-            background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);
+        .answer-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, #ff6b8a, #4ecdc4);
             color: white;
-            animation: correctAnswer 1s ease-in-out;
         }
         
-        .answer-btn.incorrect {
-            background: linear-gradient(135deg, #f44336 0%, #ef5350 100%);
+        .answer-button.correct {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
             color: white;
-            animation: incorrectAnswer 0.8s ease-in-out;
+            border-color: #44a08d;
         }
         
-        @keyframes correctAnswer {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1.1); }
+        .answer-button.incorrect {
+            background: linear-gradient(135deg, #ff6b8a, #ee5a6f);
+            color: white;
+            border-color: #ee5a6f;
         }
         
-        @keyframes incorrectAnswer {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-            100% { transform: translateX(0); }
+        .answer-button.disabled {
+            pointer-events: none;
+            opacity: 0.7;
         }
         
-        .feedback {
-            margin: 25px 0;
-            padding: 20px;
+        .explanation {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8ff);
             border-radius: 15px;
-            font-size: 1.4em;
-            font-weight: bold;
-            opacity: 0;
-            transition: all 0.5s ease;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid #4ecdc4;
+            display: none;
         }
         
-        .feedback.show {
-            opacity: 1;
+        .explanation.show {
+            display: block;
+            animation: slideDown 0.5s ease-out;
         }
         
-        .feedback.positive {
-            background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .explanation-text {
+            font-size: 1.1em;
+            color: #2c5530;
+            line-height: 1.6;
+        }
+        
+        .next-button {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
             color: white;
-        }
-        
-        .feedback.negative {
-            background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
-            color: white;
-        }
-        
-        .next-btn, .back-btn {
-            background: linear-gradient(135deg, #8b5a96 0%, #ce93d8 100%);
             border: none;
             border-radius: 15px;
             padding: 15px 30px;
             font-size: 1.2em;
             font-weight: bold;
-            color: white;
             cursor: pointer;
-            margin: 20px 10px;
+            margin-top: 20px;
             transition: all 0.3s ease;
-            border: 3px solid #ffd700;
+            display: none;
         }
         
-        .next-btn:hover, .back-btn:hover {
+        .next-button.show {
+            display: inline-block;
+        }
+        
+        .next-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
         
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            margin: 20px 0;
-            overflow: hidden;
-            border: 2px solid #ffd700;
-            position: relative;
+        /* מסך סיום */
+        .completion-screen {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            border: 4px solid #ffd700;
         }
         
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%);
-            border-radius: 10px;
-            transition: width 0.5s ease;
-        }
-        
-        .progress-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        .completion-title {
+            font-size: 2.2em;
             color: #8b5a96;
-            font-weight: bold;
-            font-size: 0.9em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
         
+        .final-score {
+            font-size: 1.5em;
+            color: #d63384;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+        
+        .achievement-message {
+            font-size: 1.3em;
+            color: #4ecdc4;
+            margin-bottom: 30px;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+        
+        /* זיקוקים */
         .fireworks {
             position: fixed;
             top: 0;
@@ -358,118 +381,66 @@
         
         .firework {
             position: absolute;
-            font-size: 2em;
-            animation: explode 1s ease-out forwards;
+            width: 6px;
+            height: 6px;
+            background: #ffd700;
+            border-radius: 50%;
         }
         
-        @keyframes explode {
-            0% { 
-                transform: scale(0) rotate(0deg);
+        @keyframes firework-explosion {
+            0% {
+                transform: scale(1);
                 opacity: 1;
             }
-            100% { 
-                transform: scale(2) rotate(360deg);
+            100% {
+                transform: scale(20);
                 opacity: 0;
             }
         }
         
-        .level-up-notification {
+        /* הודעות עידוד */
+        .encouragement-message {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #ffd700 0%, #ffeb3b 100%);
-            color: #8b5a96;
-            padding: 30px 50px;
+            background: linear-gradient(135deg, #ff6b8a, #4ecdc4);
+            color: white;
+            padding: 20px 30px;
             border-radius: 25px;
-            font-size: 2em;
+            font-size: 1.3em;
             font-weight: bold;
-            z-index: 1001;
-            text-align: center;
-            border: 4px solid #ff9a9e;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: levelUpAnimation 3s ease-in-out forwards;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            z-index: 2000;
+            animation: popIn 0.5s ease-out;
         }
         
-        @keyframes levelUpAnimation {
-            0% { 
-                transform: translate(-50%, -50%) scale(0);
-                opacity: 0;
-            }
-            20% { 
-                transform: translate(-50%, -50%) scale(1.2);
-                opacity: 1;
-            }
-            80% { 
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
-            100% { 
-                transform: translate(-50%, -50%) scale(0);
-                opacity: 0;
-            }
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
         
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
+        /* רספונסיביות */
         @media (max-width: 768px) {
             .game-container {
-                padding: 10px;
+                padding: 15px;
             }
             
             .title {
                 font-size: 2em;
             }
             
-            .menu-btn {
-                padding: 25px 15px;
-                font-size: 1.1em;
+            .answers-grid {
+                grid-template-columns: 1fr;
             }
             
-            .question-card {
-                padding: 25px;
-            }
-            
-            .question-text {
-                font-size: 1.4em;
-            }
-            
-            .answer-btn {
-                padding: 15px 10px;
-                font-size: 1em;
-            }
-            
-            .score-board {
+            .progress-display {
                 gap: 15px;
             }
             
-            .score-item {
-                padding: 10px 15px;
+            .progress-item {
                 min-width: 100px;
+                padding: 10px 15px;
             }
         }
     </style>
@@ -479,535 +450,1010 @@
     
     <div class="game-container">
         <div class="header">
-            <h1 class="title">משחק המתמטיקה של תבור 👑</h1>
-            <p class="subtitle">פיית המתמטיקה מזמינה אותך להרפתקה של 10 רמות! ✨</p>
-        </div>
-        
-        <div class="castle-progress" id="castleProgress">
-            <div class="castle-part" id="castle1">🏰<div class="level-indicator">1</div></div>
-            <div class="castle-part" id="castle2">🏯<div class="level-indicator">2</div></div>
-            <div class="castle-part" id="castle3">🗼<div class="level-indicator">3</div></div>
-            <div class="castle-part" id="castle4">👑<div class="level-indicator">4</div></div>
-            <div class="castle-part" id="castle5">🎪<div class="level-indicator">5</div></div>
-            <div class="castle-part" id="castle6">🎡<div class="level-indicator">6</div></div>
-            <div class="castle-part" id="castle7">🎢<div class="level-indicator">7</div></div>
-            <div class="castle-part" id="castle8">🎠<div class="level-indicator">8</div></div>
-            <div class="castle-part" id="castle9">🎆<div class="level-indicator">9</div></div>
-            <div class="castle-part" id="castle10">👸<div class="level-indicator">10</div></div>
-        </div>
-        
-        <div class="score-board">
-            <div class="score-item">
-                <div class="score-number" id="currentScore">0</div>
-                <div class="score-label">כוכבים ⭐</div>
-            </div>
-            <div class="score-item">
-                <div class="score-number" id="currentLevel">1</div>
-                <div class="score-label">רמה 🌟</div>
-            </div>
-            <div class="score-item">
-                <div class="score-number" id="correctAnswers">0/15</div>
-                <div class="score-label">נכונות 💜</div>
-            </div>
-        </div>
-        
-        <!-- Main Menu Screen -->
-        <div class="menu-screen" id="menuScreen">
-            <h2 style="color: #8b5a96; font-size: 1.8em; margin-bottom: 20px;">
-                שלום תבור היקרה! 👸 באיזה נושא נתרגל היום?
-            </h2>
-            <div class="menu-buttons">
-                <button class="menu-btn" onclick="startGame('numbers')">
-                    🔢 מספרים טבעיים<br>
-                    <small>10 רמות מ-10 עד 1000</small>
-                </button>
-                <button class="menu-btn" onclick="startGame('operations')">
-                    ➕ פעולות חשבון<br>
-                    <small>לוח כפל מדורג ב-10 רמות</small>
-                </button>
-                <button class="menu-btn" onclick="startGame('geometry')">
-                    📐 גאומטריה<br>
-                    <small>זוויות ומשולשים ב-10 רמות</small>
-                </button>
-            </div>
-            <div style="margin-top: 30px; color: #8b5a96; font-size: 1.1em;">
-                <strong>מערכת רמות חדשה:</strong><br>
-                כל רמה = 15 שאלות | 10 רמות קושי מדורגות | התקדמות הדרגתית
-            </div>
-        </div>
-        
-        <!-- Game Screen -->
-        <div class="game-screen hidden" id="gameScreen">
-            <div class="question-header">
-                <div class="current-level">רמה <span id="levelDisplay">1</span></div>
-                <div style="color: #8b5a96;">שאלה <span id="questionNumber">1</span> מתוך 15</div>
+            <h1 class="title">🧚‍♀️ פיית המתמטיקה של תבור 🧚‍♀️</h1>
+            <p class="subtitle">ברוכה הבאה לארמון הקסום שלי! 👑✨</p>
+            
+            <div class="castle-display" id="castleDisplay">
+                🏰✨
             </div>
             
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                <div class="progress-text" id="progressText">0%</div>
-            </div>
-            
-            <div class="question-card" id="questionCard">
-                <div class="question-text" id="questionText">טוען שאלה...</div>
-                <div id="questionImage"></div>
-                <div class="answers-grid" id="answersGrid">
-                    <!-- Answers will be populated here -->
+            <div class="progress-display">
+                <div class="progress-item">
+                    <div class="progress-number" id="currentLevel">1</div>
+                    <div class="progress-label">רמה נוכחית</div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-number" id="totalScore">0</div>
+                    <div class="progress-label">נקודות קסם</div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-number" id="correctCount">0</div>
+                    <div class="progress-label">תשובות נכונות</div>
                 </div>
             </div>
-            
-            <div class="feedback" id="feedback"></div>
-            
-            <div>
-                <button class="back-btn" onclick="showMenu()">חזור לתפריט 🏠</button>
-                <button class="next-btn hidden" id="nextBtn" onclick="nextQuestion()">שאלה הבאה ➡️</button>
+        </div>
+
+        <!-- מסך בחירת נושא -->
+        <div class="screen active" id="subjectSelection">
+            <div class="menu-grid">
+                <button class="menu-button subject-button" onclick="selectSubject('numbers')">
+                    <div class="button-title">🔢 מספרים טבעיים</div>
+                    <div class="button-description">זיהוי מספרים עד 1,000, סדרות ומיקום על ישר המספרים</div>
+                </button>
+                <button class="menu-button subject-button" onclick="selectSubject('operations')">
+                    <div class="button-title">➕➖✖️➗ פעולות חשבון</div>
+                    <div class="button-description">חיבור עם המרה, חיסור עם פריטה, לוח הכפל וחילוק</div>
+                </button>
+                <button class="menu-button subject-button" onclick="selectSubject('geometry')">
+                    <div class="button-title">📐 גאומטריה קסומה</div>
+                    <div class="button-description">זוויות ומשולשים בארמון פיית המתמטיקה</div>
+                </button>
             </div>
         </div>
-        
-        <!-- Result Screen -->
-        <div class="result-screen hidden" id="resultScreen">
-            <h2 style="color: #8b5a96; font-size: 2.2em; margin-bottom: 20px;" id="resultTitle"></h2>
-            <div id="resultMessage" style="font-size: 1.4em; margin: 20px 0;"></div>
-            <div>
-                <button class="next-btn" onclick="showMenu()">תפריט ראשי 🏠</button>
-                <button class="next-btn" onclick="nextLevel()">רמה הבאה! 🚀</button>
+
+        <!-- מסך בחירת רמת קושי -->
+        <div class="screen" id="difficultySelection">
+            <button class="menu-button back-button" onclick="backToSubjects()">
+                ← חזרה לבחירת נושא
+            </button>
+            
+            <div class="subtitle" id="subjectTitle" style="text-align: center; margin-bottom: 30px;">
+                בחרי רמת קושי עבור הנושא שבחרת ✨
+            </div>
+            
+            <div class="menu-grid">
+                <button class="menu-button" onclick="startGame('easy')">
+                    <div class="button-title">🌟 רמה קלה</div>
+                    <div class="button-description">התחלה נעימה ומעודדת</div>
+                </button>
+                <button class="menu-button" onclick="startGame('medium')">
+                    <div class="button-title">⭐ רמה בינונית</div>
+                    <div class="button-description">אתגר מתון ומהנה</div>
+                </button>
+                <button class="menu-button" onclick="startGame('hard')">
+                    <div class="button-title">🏆 רמה קשה</div>
+                    <div class="button-description">אתגר לילדות חכמות וחרוצות!</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- מסך המשחק -->
+        <div class="screen" id="gameScreen">
+            <button class="menu-button back-button" onclick="backToDifficulty()">
+                ← חזרה לבחירת רמת קושי
+            </button>
+            
+            <div class="game-board">
+                <div class="progress-display">
+                    <div class="progress-item">
+                        <div class="progress-number" id="currentQuestion">1</div>
+                        <div class="progress-label">שאלה נוכחית</div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-number" id="gameScore">0</div>
+                        <div class="progress-label">ניקוד המשחק</div>
+                    </div>
+                </div>
+                
+                <div class="question-container">
+                    <div class="question-text" id="questionText">
+                        טוען שאלה קסומה...
+                    </div>
+                    <div class="answers-grid" id="answersContainer">
+                        <!-- תשובות יתווספו כאן באופן דינמי -->
+                    </div>
+                    <div class="explanation" id="explanation">
+                        <div class="explanation-text" id="explanationText"></div>
+                    </div>
+                    <button class="next-button" id="nextButton" onclick="nextQuestion()">
+                        השאלה הבאה ➡️
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- מסך סיום -->
+        <div class="screen" id="completionScreen">
+            <div class="completion-screen">
+                <div class="completion-title">🎉 תבור המדהימה! 🎉</div>
+                <div class="final-score" id="finalScoreText"></div>
+                <div class="achievement-message" id="achievementText"></div>
+                
+                <div class="castle-display" style="margin: 20px 0; font-size: 4em;">
+                    🏰👑✨🧚‍♀️✨👑🏰
+                </div>
+                
+                <div class="menu-grid" style="max-width: 400px;">
+                    <button class="menu-button" onclick="backToSubjects()">
+                        🔄 בחרי נושא חדש
+                    </button>
+                    <button class="menu-button" onclick="playAgain()">
+                        🎯 שחקי שוב באותו נושא
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-    
+
     <div class="fireworks" id="fireworks"></div>
 
     <script>
-        console.log('🎮 משחק המתמטיקה המתקדם של תבור נטען...');
-        
-        // Game State
-        let gameState = {
-            currentTopic: '',
-            currentLevel: 1,
-            currentQuestion: 0,
-            score: 0,
-            correctAnswersInRow: 0,
-            questions: []
-        };
-        
-        // Question generators for different levels
-        const questionGenerators = {
+        // משתנים גלובליים
+        let currentSubject = '';
+        let currentDifficulty = '';
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let gameScore = 0;
+        let totalScore = 0;
+        let correctAnswers = 0;
+        let totalCorrectAnswers = 0;
+        let answered = false;
+        let currentLevel = 1;
+
+        // מאגר השאלות המלא לפי נושאים ורמות קושי
+        const questionBank = {
             numbers: {
-                1: () => generateNumberQuestions(1, 50, 'basic'),
-                2: () => generateNumberQuestions(1, 100, 'sequences'),
-                3: () => generateNumberQuestions(50, 200, 'comparison'),
-                4: () => generateNumberQuestions(100, 300, 'place_value'),
-                5: () => generateNumberQuestions(200, 500, 'advanced_sequences'),
-                6: () => generateNumberQuestions(300, 600, 'complex_comparison'),
-                7: () => generateNumberQuestions(400, 700, 'mixed_operations'),
-                8: () => generateNumberQuestions(500, 800, 'word_problems'),
-                9: () => generateNumberQuestions(600, 900, 'complex_patterns'),
-                10: () => generateNumberQuestions(700, 1000, 'master_level')
-            },
-            operations: {
-                1: () => generateMultiplicationQuestions([1, 2, 5, 10]),
-                2: () => generateMultiplicationQuestions([2, 3, 4, 5]),
-                3: () => generateMultiplicationQuestions([4, 5, 6, 7]),
-                4: () => generateMultiplicationQuestions([5, 6, 7, 8]),
-                5: () => generateMultiplicationQuestions([6, 7, 8, 9]),
-                6: () => generateMixedOperations('intermediate'),
-                7: () => generateMixedOperations('advanced'), 
-                8: () => generateComplexOperations(),
-                9: () => generateMasterOperations(),
-                10: () => generateUltimateOperations()
-            },
-            geometry: {
-                1: () => generateGeometryQuestions('basic_angles'),
-                2: () => generateGeometryQuestions('angle_types'),
-                3: () => generateGeometryQuestions('basic_triangles'),
-                4: () => generateGeometryQuestions('triangle_types'),
-                5: () => generateGeometryQuestions('angle_measurement'),
-                6: () => generateGeometryQuestions('triangle_properties'),
-                7: () => generateGeometryQuestions('mixed_shapes'),
-                8: () => generateGeometryQuestions('complex_angles'),
-                9: () => generateGeometryQuestions('advanced_triangles'),
-                10: () => generateGeometryQuestions('geometry_master')
-            }
-        };
-
-        // Utility function to shuffle array and return correct index
-        function shuffleAnswers(answers, correctAnswer = null) {
-            // If correctAnswer is provided, find it in the array
-            if (correctAnswer !== null) {
-                const correctIndex = answers.indexOf(correctAnswer);
-                if (correctIndex === -1) {
-                    answers[0] = correctAnswer; // Ensure correct answer is in array
-                }
-            }
-            
-            const correct = correctAnswer || answers[0];
-            const shuffled = [...answers].sort(() => Math.random() - 0.5);
-            const newCorrectIndex = shuffled.indexOf(correct);
-            
-            return {
-                answers: shuffled,
-                correctIndex: newCorrectIndex
-            };
-        }
-
-        // Generate number questions based on level
-        function generateNumberQuestions(min, max, type) {
-            const questions = [];
-            
-            for (let i = 0; i < 15; i++) {
-                let question;
-                
-                switch(type) {
-                    case 'basic':
-                        question = generateBasicNumberQuestion(min, max);
-                        break;
-                    case 'sequences':
-                        question = generateSequenceQuestion(min, max);
-                        break;
-                    case 'comparison':
-                        question = generateComparisonQuestion(min, max);
-                        break;
-                    case 'place_value':
-                        question = generatePlaceValueQuestion(min, max);
-                        break;
-                    default:
-                        question = generateBasicNumberQuestion(min, max);
-                }
-                
-                questions.push(question);
-            }
-            
-            return questions;
-        }
-
-        // Generate basic number questions
-        function generateBasicNumberQuestion(min, max) {
-            const num = Math.floor(Math.random() * (max - min + 1)) + min;
-            const type = Math.floor(Math.random() * 3);
-            
-            switch(type) {
-                case 0: // Next number
-                    const nextAnswers = [num + 1, num - 1, num + 2, num - 2];
-                    const nextShuffled = shuffleAnswers(nextAnswers, num + 1);
-                    return {
-                        question: `מה המספר שבא אחרי ${num}?`,
-                        answers: nextShuffled.answers,
-                        correct: nextShuffled.correctIndex,
-                        tip: `המספר העוקב ל-${num} הוא ${num + 1}`
-                    };
-                    
-                case 1: // Previous number
-                    const prevAnswers = [num - 1, num + 1, num - 2, num + 2];
-                    const prevShuffled = shuffleAnswers(prevAnswers, num - 1);
-                    return {
-                        question: `מה המספר שבא לפני ${num}?`,
-                        answers: prevShuffled.answers,
-                        correct: prevShuffled.correctIndex,
-                        tip: `המספר הקודם ל-${num} הוא ${num - 1}`
-                    };
-                    
-                case 2: // Largest number
-                    const nums = [num, num + 10, num - 5, num + 15];
-                    const largest = Math.max(...nums);
-                    const largestShuffled = shuffleAnswers(nums.map(n => n.toString()), largest.toString());
-                    return {
-                        question: `איזה מספר הוא הגדול ביותר?`,
-                        answers: largestShuffled.answers,
-                        correct: largestShuffled.correctIndex,
-                        tip: `המספר הגדול ביותר הוא ${largest}`
-                    };
-            }
-        }
-
-        // Generate sequence questions
-        function generateSequenceQuestion(min, max) {
-            const start = Math.floor(Math.random() * (max - min - 20)) + min;
-            const step = [5, 10, 2, 3][Math.floor(Math.random() * 4)];
-            const sequence = [start, start + step, start + 2*step];
-            const missing = start + 3*step;
-            
-            const seqAnswers = [missing, missing + step, missing - step, missing + 5];
-            const seqShuffled = shuffleAnswers(seqAnswers.map(n => n.toString()), missing.toString());
-            
-            return {
-                question: `מה המספר החסר: ${sequence[0]}, ${sequence[1]}, ${sequence[2]}, ___`,
-                answers: seqShuffled.answers,
-                correct: seqShuffled.correctIndex,
-                tip: `הסדרה עולה ב-${step}, אז התשובה היא ${missing}`
-            };
-        }
-
-        // Generate multiplication questions by level
-        function generateMultiplicationQuestions(tables) {
-            const questions = [];
-            
-            for (let i = 0; i < 15; i++) {
-                const table = tables[Math.floor(Math.random() * tables.length)];
-                const multiplier = Math.floor(Math.random() * 9) + 1;
-                const result = table * multiplier;
-                
-                const wrongAnswers = [
-                    result + table,
-                    result - table, 
-                    result + multiplier
-                ];
-                
-                const multAnswers = [result, ...wrongAnswers];
-                const multShuffled = shuffleAnswers(multAnswers.map(n => n.toString()), result.toString());
-                
-                questions.push({
-                    question: `כמה זה <span class='math-text'>${table} × ${multiplier}</span>? ✨`,
-                    answers: multShuffled.answers,
-                    correct: multShuffled.correctIndex,
-                    tip: `${table} כפול ${multiplier} = ${result}. טיפ: ${getMultiplicationTip(table, multiplier)}`
-                });
-            }
-            
-            return questions;
-        }
-
-        // Generate geometry questions by type
-        function generateGeometryQuestions(type) {
-            const questions = [];
-            
-            const templates = {
-                basic_angles: [
+                easy: [
                     {
-                        question: "איזה סוג זווית זה? (פחות מ-90 מעלות)",
-                        image: "🔺",
-                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
-                        correct: 0,
-                        tip: "זווית חדה קטנה מ-90 מעלות"
-                    },
-                    {
-                        question: "איזה סוג זווית זה? (בדיוק 90 מעלות)",
-                        image: "📐",
-                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        question: "איזה מספר גדול יותר?",
+                        answers: ["25", "31", "19", "22"],
                         correct: 1,
-                        tip: "זווית ישרה היא בדיוק 90 מעלות"
+                        explanation: "31 הוא המספר הגדול ביותר כי 31 > 25 > 22 > 19. תבור החכמה, זכרי שככל שהמספר גדול יותר, הוא גבוה יותר על ישר המספרים!"
                     },
                     {
-                        question: "איזה סוג זווית זה? (יותר מ-90 מעלות)",
-                        image: "📏",
-                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
-                        correct: 2,
-                        tip: "זווית קהה גדולה מ-90 מעלות"
+                        question: "מה המספר שבא אחרי <span class='math-text'>47</span>?",
+                        answers: ["46", "48", "49", "45"],
+                        correct: 1,
+                        explanation: "המספר שבא אחרי 47 הוא 48, כי אנחנו מוסיפים 1. זה כמו לטפס מדרגה אחת למעלה בטירה הקסומה!"
+                    },
+                    {
+                        question: "מה המספר שבא לפני <span class='math-text'>30</span>?",
+                        answers: ["29", "31", "28", "32"],
+                        correct: 0,
+                        explanation: "המספר שבא לפני 30 הוא 29, כי אנחנו מחסירים 1. זה כמו לרדת מדרגה אחת למטה בטירה!"
+                    },
+                    {
+                        question: "כמה עשרות יש במספר <span class='math-text'>56</span>?",
+                        answers: ["5", "6", "50", "60"],
+                        correct: 0,
+                        explanation: "במספר 56 יש 5 עשרות. הספרה 5 במקום העשרות אומרת לנו שיש 5 קבוצות של 10!"
+                    },
+                    {
+                        question: "איזה מספר קטן יותר?",
+                        answers: ["67", "43", "59", "61"],
+                        correct: 1,
+                        explanation: "43 הוא המספר הקטן ביותר כי 43 < 59 < 61 < 67. תבור החכמה, המספר הקטן נמצא יותר שמאלה על ישר המספרים!"
+                    },
+                    {
+                        question: "מה המספר השלם הבא בסדרה: <span class='math-text'>10, 20, 30, ...</span>?",
+                        answers: ["35", "40", "50", "45"],
+                        correct: 1,
+                        explanation: "הסדרה עולה בקפיצות של 10, אז אחרי 30 בא 40. זה כמו לעלות 10 מדרגות בכל פעם!"
+                    },
+                    {
+                        question: "כמה יחידות יש במספר <span class='math-text'>89</span>?",
+                        answers: ["8", "9", "80", "90"],
+                        correct: 1,
+                        explanation: "במספר 89 יש 9 יחידות. הספרה 9 במקום היחידות מראה לנו כמה יחידות בודדות יש!"
+                    },
+                    {
+                        question: "איזה מספר נמצא בין <span class='math-text'>15</span> ל-<span class='math-text'>17</span>?",
+                        answers: ["14", "16", "18", "13"],
+                        correct: 1,
+                        explanation: "16 נמצא בין 15 ל-17, כי 15 < 16 < 17. זה כמו הקומה האמצעית בטירה!"
+                    },
+                    {
+                        question: "מה המספר הבא בסדרה: <span class='math-text'>2, 4, 6, 8, ...</span>?",
+                        answers: ["9", "10", "11", "12"],
+                        correct: 1,
+                        explanation: "זו סדרת מספרים זוגיים, אז אחרי 8 בא 10. כל מספר זוגי מתחלק ב-2 בלי שארית!"
+                    },
+                    {
+                        question: "איזה מספר הכי קרוב ל-<span class='math-text'>50</span>?",
+                        answers: ["45", "48", "53", "42"],
+                        correct: 1,
+                        explanation: "48 הוא הכי קרוב ל-50 כי המרחק הוא רק 2. תבור החכמה, תמיד בדקי איזה מרחק הכי קטן!"
+                    },
+                    {
+                        question: "כמה מאות יש במספר <span class='math-text'>234</span>?",
+                        answers: ["2", "3", "4", "200"],
+                        correct: 0,
+                        explanation: "במספר 234 יש 2 מאות. הספרה 2 במקום המאות אומרת לנו שיש 2 קבוצות של 100!"
+                    },
+                    {
+                        question: "מה המספר הקודם בסדרה: <span class='math-text'>..., 12, 15, 18</span>?",
+                        answers: ["9", "10", "11", "8"],
+                        correct: 0,
+                        explanation: "הסדרה עולה ב-3, אז לפני 12 בא 9. זה כמו לירד 3 מדרגות בטירה הקסומה!"
+                    },
+                    {
+                        question: "איזה מספר הוא הגדול ביותר?",
+                        answers: ["99", "101", "89", "95"],
+                        correct: 1,
+                        explanation: "101 הוא המספר הגדול ביותר כי הוא מעל 100. תבור החכמה, 101 הוא מספר תלת-ספרתי!"
+                    },
+                    {
+                        question: "מה השווי המקומי של הספרה 7 במספר <span class='math-text'>73</span>?",
+                        answers: ["7", "70", "3", "30"],
+                        correct: 1,
+                        explanation: "הספרה 7 במקום העשרות, אז השווי המקומי שלה הוא 70. זה אומר 7 קבוצות של 10!"
+                    },
+                    {
+                        question: "כמה מספרים יש בין <span class='math-text'>20</span> ל-<span class='math-text'>25</span> (לא כולל)?",
+                        answers: ["3", "4", "5", "6"],
+                        correct: 1,
+                        explanation: "בין 20 ל-25 יש 4 מספרים: 21, 22, 23, 24. תבור החכמה, ספרי אותם על האצבעות!"
                     }
                 ],
-                angle_types: [
+                medium: [
                     {
-                        question: "כמה מעלות יש בזווית ישרה?",
-                        answers: ["90", "180", "45", "360"],
-                        correct: 0,
-                        tip: "זווית ישרה = 90 מעלות תמיד"
+                        question: "מה המספר הבא בסדרה: <span class='math-text'>5, 10, 15, 20, ...</span>?",
+                        answers: ["23", "25", "30", "24"],
+                        correct: 1,
+                        explanation: "זו סדרת כפולות של 5, אז אחרי 20 בא 25. תבור החכמה, זה לוח הכפל של 5!"
                     },
                     {
-                        question: "איזו זווית גדולה מ-90 מעלות אבל קטנה מ-180?",
-                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        question: "איזה מספר קרוב יותר ל-<span class='math-text'>100</span>?",
+                        answers: ["87", "94", "105", "89"],
+                        correct: 1,
+                        explanation: "94 קרוב יותר ל-100 (מרחק של 6) מאשר האחרים. תבור החכמה, חשבי את המרחק מכל מספר!"
+                    },
+                    {
+                        question: "מה המספר החסר: <span class='math-text'>45, 50, ?, 60</span>?",
+                        answers: ["52", "55", "53", "57"],
+                        correct: 1,
+                        explanation: "הסדרה עולה ב-5, אז המספר החסר הוא 55. זה כמו לטפס 5 מדרגות בכל פעם בטירה!"
+                    },
+                    {
+                        question: "כמה עשרות ויחידות יש במספר <span class='math-text'>147</span>?",
+                        answers: ["1 מאה, 4 עשרות, 7 יחידות", "14 עשרות, 7 יחידות", "1 עשרה, 47 יחידות", "147 יחידות"],
+                        correct: 0,
+                        explanation: "147 = 1 מאה + 4 עשרות + 7 יחידות. תבור החכמה, כל ספרה יושבת במקום שלה!"
+                    },
+                    {
+                        question: "איזה מספר הכי גדול?",
+                        answers: ["234", "243", "324", "342"],
+                        correct: 3,
+                        explanation: "342 הוא הגדול ביותר כי מתחיל ב-3 והספרה השנייה היא 4. תבור החכמה, בדקי מימין לשמאל!"
+                    },
+                    {
+                        question: "מה המספר שבין <span class='math-text'>128</span> ל-<span class='math-text'>130</span>?",
+                        answers: ["127", "129", "131", "132"],
+                        correct: 1,
+                        explanation: "129 נמצא בדיוק בין 128 ל-130. זה כמו החדר האמצעי בטירה הקסומה!"
+                    },
+                    {
+                        question: "מה הסכום של מקומות הערך במספר <span class='math-text'>256</span>?",
+                        answers: ["200 + 50 + 6", "20 + 5 + 6", "2 + 5 + 6", "256"],
+                        correct: 0,
+                        explanation: "256 = 200 (מאות) + 50 (עשרות) + 6 (יחידות). תבור החכמה, כל ספרה שווה לפי המקום שלה!"
+                    },
+                    {
+                        question: "איזה מספר חסר בסדרה: <span class='math-text'>12, 24, ?, 48</span>?",
+                        answers: ["30", "36", "35", "40"],
+                        correct: 1,
+                        explanation: "זו סדרת כפולות של 12: 12, 24, 36, 48. תבור החכמה, כל מספר כפול ב-2!"
+                    },
+                    {
+                        question: "מה המספר הקטן ביותר שאפשר ליצור מהספרות <span class='math-text'>7, 3, 1</span>?",
+                        answers: ["137", "173", "317", "371"],
+                        correct: 0,
+                        explanation: "למספר הקטן ביותר נסדר את הספרות מהקטנה לגדולה: 137. תבור החכמה!"
+                    },
+                    {
+                        question: "כמה מספרים זוגיים יש בין <span class='math-text'>10</span> ל-<span class='math-text'>20</span>?",
+                        answers: ["4", "5", "6", "7"],
                         correct: 2,
-                        tip: "זווית קהה נמצאת בין 90 ל-180 מעלות"
+                        explanation: "המספרים הזוגיים בין 10 ל-20 הם: 10, 12, 14, 16, 18, 20 (6 מספרים). תבור החכמה!"
+                    },
+                    {
+                        question: "מה המספר הבא בסדרה: <span class='math-text'>100, 90, 80, ...</span>?",
+                        answers: ["75", "70", "60", "65"],
+                        correct: 1,
+                        explanation: "הסדרה יורדת ב-10, אז אחרי 80 בא 70. זה כמו לרדת 10 מדרגות בטירה!"
+                    },
+                    {
+                        question: "איזה מספר עגול (עם אפסים) הכי קרוב ל-<span class='math-text'>347</span>?",
+                        answers: ["300", "350", "340", "400"],
+                        correct: 1,
+                        explanation: "350 הוא המספר העגול הכי קרוב ל-347. תבור החכמה, תמיד בחרי בעיגול הקרוב!"
+                    },
+                    {
+                        question: "מה המספר החסר: <span class='math-text'>?, 17, 34, 51</span>?",
+                        answers: ["0", "10", "5", "8"],
+                        correct: 0,
+                        explanation: "הסדרה עולה ב-17, אז המספר הראשון הוא 0. תבור החכמה, זה הבסיס הקסום!"
+                    },
+                    {
+                        question: "כמה ספרות יש במספר הגדול ביותר עד <span class='math-text'>999</span>?",
+                        answers: ["2", "3", "4", "1"],
+                        correct: 1,
+                        explanation: "999 הוא המספר הגדול ביותר עד 999, ויש לו 3 ספרות. תבור החכמה!"
+                    },
+                    {
+                        question: "מה המספר הגדול ביותר שאפשר ליצור מהספרות <span class='math-text'>4, 8, 2</span>?",
+                        answers: ["824", "842", "482", "248"],
+                        correct: 1,
+                        explanation: "למספר הגדול ביותר נסדר את הספרות מהגדולה לקטנה: 842. תבור החכמה!"
+                    }
+                ],
+                hard: [
+                    {
+                        question: "מה המספר החסר בסדרה: <span class='math-text'>7, 14, 28, ?, 112</span>?",
+                        answers: ["42", "56", "70", "84"],
+                        correct: 1,
+                        explanation: "כל מספר כפול ב-2: 7×2=14, 14×2=28, 28×2=56, 56×2=112. תבור הגאונית!"
+                    },
+                    {
+                        question: "איזה מספר הכי קרוב ל-<span class='math-text'>500</span>?",
+                        answers: ["487", "513", "476", "524"],
+                        correct: 0,
+                        explanation: "487 קרוב ל-500 במרחק של 13, שהוא הקטן ביותר. תבור החכמה, חשבי מרחקים!"
+                    },
+                    {
+                        question: "מה הסכום של כל הספרות במספר <span class='math-text'>789</span>?",
+                        answers: ["21", "24", "18", "27"],
+                        correct: 1,
+                        explanation: "7 + 8 + 9 = 24. תבור החכמה, תחברי את כל הספרות!"
+                    },
+                    {
+                        question: "כמה מספרים אי-זוגיים יש בין <span class='math-text'>50</span> ל-<span class='math-text'>70</span> (כולל)?",
+                        answers: ["9", "10", "11", "12"],
+                        correct: 1,
+                        explanation: "המספרים האי-זוגיים: 51,53,55,57,59,61,63,65,67,69 - סה\"כ 10. תבור הגאונית!"
+                    },
+                    {
+                        question: "מה המספר החסר: <span class='math-text'>3, 6, 12, 24, ?, 96</span>?",
+                        answers: ["36", "48", "60", "72"],
+                        correct: 1,
+                        explanation: "כל מספר כפול ב-2: 3×2=6, 6×2=12, 12×2=24, 24×2=48, 48×2=96. מדהים תבור!"
+                    },
+                    {
+                        question: "איזה מספר נמצא בדיוק באמצע בין <span class='math-text'>200</span> ל-<span class='math-text'>300</span>?",
+                        answers: ["240", "250", "260", "245"],
+                        correct: 1,
+                        explanation: "האמצע בין 200 ל-300 הוא (200+300)÷2 = 250. תבור החכמה!"
+                    },
+                    {
+                        question: "מה המספר הבא בסדרה: <span class='math-text'>1, 4, 9, 16, ...</span>?",
+                        answers: ["20", "25", "24", "30"],
+                        correct: 1,
+                        explanation: "זו סדרת מספרים בריבוע: 1², 2², 3², 4², 5² = 25. תבור הגאונית!"
+                    },
+                    {
+                        question: "כמה מספרים יש מ-<span class='math-text'>95</span> עד <span class='math-text'>105</span> (כולל)?",
+                        answers: ["10", "11", "9", "12"],
+                        correct: 1,
+                        explanation: "מ-95 עד 105 כולל: 95,96,97,98,99,100,101,102,103,104,105 = 11 מספרים. מושלם תבור!"
+                    },
+                    {
+                        question: "מה המספר החסר בסדרה: <span class='math-text'>100, 91, 82, ?, 64</span>?",
+                        answers: ["73", "75", "71", "77"],
+                        correct: 0,
+                        explanation: "הסדרה יורדת ב-9 כל פעם: 100-9=91, 91-9=82, 82-9=73, 73-9=64. גאונית תבור!"
+                    },
+                    {
+                        question: "איזה מספר הוא חצי מ-<span class='math-text'>246</span>?",
+                        answers: ["123", "124", "122", "125"],
+                        correct: 0,
+                        explanation: "חצי מ-246 הוא 246÷2 = 123. תבור החכמה!"
+                    },
+                    {
+                        question: "מה השווי המקומי של הספרה 5 במספר <span class='math-text'>1523</span>?",
+                        answers: ["5", "50", "500", "5000"],
+                        correct: 2,
+                        explanation: "הספרה 5 נמצאת במקום המאות, אז השווי המקומי שלה הוא 500. מדהים תבור!"
+                    },
+                    {
+                        question: "מה המספר הבא בסדרה: <span class='math-text'>2, 6, 18, 54, ...</span>?",
+                        answers: ["108", "126", "162", "180"],
+                        correct: 2,
+                        explanation: "כל מספר כפול ב-3: 2×3=6, 6×3=18, 18×3=54, 54×3=162. גאונית תבור!"
+                    },
+                    {
+                        question: "כמה עשרות שלמות יש במספר <span class='math-text'>1847</span>?",
+                        answers: ["184", "18", "8", "4"],
+                        correct: 0,
+                        explanation: "1847 ÷ 10 = 184 עשרות שלמות (עם שארית 7). תבור החכמה!"
+                    },
+                    {
+                        question: "מה המספר הקטן ביותר שגדול מ-<span class='math-text'>399</span>?",
+                        answers: ["400", "401", "398", "410"],
+                        correct: 0,
+                        explanation: "המספר הקטן ביותר שגדול מ-399 הוא 400. תבור החכמה!"
+                    },
+                    {
+                        question: "מה המספר החסר: <span class='math-text'>1000, ?, 800, 700</span>?",
+                        answers: ["950", "900", "850", "920"],
+                        correct: 1,
+                        explanation: "הסדרה יורדת ב-100: 1000, 900, 800, 700. מושלמת תבור!"
                     }
                 ]
-            };
-            
-            const typeQuestions = templates[type] || templates.basic_angles;
-            
-            for (let i = 0; i < 15; i++) {
-                const baseQuestion = typeQuestions[i % typeQuestions.length];
-                const variation = generateGeometryVariation(baseQuestion, type, i);
-                questions.push(variation);
+            },
+            operations: {
+                easy: [
+                    {
+                        question: "חשבי: <span class='math-text'>5 + 3</span>",
+                        answers: ["7", "8", "9", "6"],
+                        correct: 1,
+                        explanation: "5 + 3 = 8. תבור החכמה, נספור: 5 ועוד 3 זה 8. זה כמו 5 כוכבים ועוד 3 כוכבים!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>10 - 4</span>",
+                        answers: ["5", "6", "7", "8"],
+                        correct: 1,
+                        explanation: "10 - 4 = 6. תבור החכמה, מ-10 נחסיר 4 ונקבל 6. זה כמו לקחת 4 כוכבים מ-10 כוכבים!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>2 × 3</span>",
+                        answers: ["5", "6", "7", "8"],
+                        correct: 1,
+                        explanation: "2 × 3 = 6. תבור החכמה, זה אומר 2 פעמים 3, או 3+3. זה כמו 2 שורות של 3 יהלומים!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>8 ÷ 2</span>",
+                        answers: ["3", "4", "5", "6"],
+                        correct: 1,
+                        explanation: "8 ÷ 2 = 4. תבור החכמה, כמה פעמים 2 נכנס ב-8? 4 פעמים! זה כמו לחלק 8 כוכבים ל-2 קבוצות!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>7 + 2</span>",
+                        answers: ["8", "9", "10", "11"],
+                        correct: 1,
+                        explanation: "7 + 2 = 9. תבור החכמה, נספור קדימה מ-7: 8, 9. זה כמו לטפס 2 מדרגות בטירה!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>12 - 5</span>",
+                        answers: ["6", "7", "8", "9"],
+                        correct: 1,
+                        explanation: "12 - 5 = 7. תבור החכמה, נספור אחורה מ-12: 11, 10, 9, 8, 7. מדהים!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>4 × 2</span>",
+                        answers: ["6", "7", "8", "9"],
+                        correct: 2,
+                        explanation: "4 × 2 = 8. תבור החכמה, זה אומר 4 פעמים 2, או 4+4. זה כמו 4 זוגות של יהלומים!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>15 ÷ 3</span>",
+                        answers: ["4", "5", "6", "7"],
+                        correct: 1,
+                        explanation: "15 ÷ 3 = 5. תבור החכמה, כמה פעמים 3 נכנס ב-15? 5 פעמים! זה כמו לחלק 15 כוכבים ל-3 קבוצות!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>6 + 4</span>",
+                        answers: ["9", "10", "11", "12"],
+                        correct: 1,
+                        explanation: "6 + 4 = 10. תבור החכמה, 6 ועוד 4 זה 10. זה מספר עגול וקסום!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>9 - 3</span>",
+                        answers: ["5", "6", "7", "8"],
+                        correct: 1,
+                        explanation: "9 - 3 = 6. תבור החכמה, מ-9 נחסיר 3 ונקבל 6. זה כמו להוריד 3 כוכבים מהשמיים!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>5 × 1</span>",
+                        answers: ["4", "5", "6", "7"],
+                        correct: 1,
+                        explanation: "5 × 1 = 5. תבור החכמה, כל מספר כפול 1 שווה לעצמו! זה חוק קסום במתמטיקה!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>14 ÷ 7</span>",
+                        answers: ["1", "2", "3", "4"],
+                        correct: 1,
+                        explanation: "14 ÷ 7 = 2. תבור החכמה, כמה פעמים 7 נכנס ב-14? 2 פעמים! זה כמו לחלק עוגה ל-2 חלקים שווים!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>3 + 5</span>",
+                        answers: ["7", "8", "9", "10"],
+                        correct: 1,
+                        explanation: "3 + 5 = 8. תבור החכמה, נספור: 3 ועוד 5 זה 8. זה כמו לאסוף 8 פרחים קסומים!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>11 - 6</span>",
+                        answers: ["4", "5", "6", "7"],
+                        correct: 1,
+                        explanation: "11 - 6 = 5. תבור החכמה, מ-11 נחסיר 6 ונקבל 5. זה כמו שנשארו לנו 5 כוכבים בשמיים!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>3 × 4</span>",
+                        answers: ["11", "12", "13", "14"],
+                        correct: 1,
+                        explanation: "3 × 4 = 12. תבור החכמה, זה אומר 3 פעמים 4, או 4+4+4. זה כמו 3 שורות של 4 יהלומים!"
+                    }
+                ],
+                medium: [
+                    {
+                        question: "חשבי: <span class='math-text'>23 + 15</span>",
+                        answers: ["37", "38", "39", "36"],
+                        correct: 1,
+                        explanation: "23 + 15 = 38. תבור החכמה, נחבר: 20+10=30, 3+5=8, ביחד 38. זה חיבור עם המרה!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>45 - 18</span>",
+                        answers: ["26", "27", "28", "29"],
+                        correct: 1,
+                        explanation: "45 - 18 = 27. תבור החכמה, מ-45 נחסיר 18 עם פריטה. זה חיסור מאתגר ואת עשית אותו!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>7 × 6</span>",
+                        answers: ["40", "41", "42", "43"],
+                        correct: 2,
+                        explanation: "7 × 6 = 42. תבור החכמה, מלוח הכפל הקסום: 7×6=42. זה אחד הכפולות היפות!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>36 ÷ 6</span>",
+                        answers: ["5", "6", "7", "8"],
+                        correct: 1,
+                        explanation: "36 ÷ 6 = 6. תבור החכמה, כמה פעמים 6 נכנס ב-36? 6 פעמים! זה מספר מושלם!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>34 + 29</span>",
+                        answers: ["61", "62", "63", "64"],
+                        correct: 2,
+                        explanation: "34 + 29 = 63. תבור החכמה, 30+20=50, 4+9=13, ביחד 63. חיבור מתקדם!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>52 - 25</span>",
+                        answers: ["25", "26", "27", "28"],
+                        correct: 2,
+                        explanation: "52 - 25 = 27. תבור החכמה, זה חיסור נוח כי 25 זה רבע מ-100!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>8 × 7</span>",
+                        answers: ["54", "55", "56", "57"],
+                        correct: 2,
+                        explanation: "8 × 7 = 56. תבור החכמה, מלוח הכפל הקסום: 8×7=56. זה כפל מתקדם!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>48 ÷ 8</span>",
+                        answers: ["5", "6", "7", "8"],
+                        correct: 1,
+                        explanation: "48 ÷ 8 = 6. תבור החכמה, כמה פעמים 8 נכנס ב-48? 6 פעמים! זה מחילוק הכפל!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>5 + 3 × 2</span>",
+                        answers: ["10", "11", "16", "13"],
+                        correct: 1,
+                        explanation: "5 + 3 × 2 = 5 + 6 = 11. תבור החכמה, תחילה כפל, אחר כך חיבור! זה סדר הפעולות הקסום!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>67 + 28</span>",
+                        answers: ["93", "94", "95", "96"],
+                        correct: 2,
+                        explanation: "67 + 28 = 95. תבור החכמה, 60+20=80, 7+8=15, ביחד 95. חיבור מתקדם עם המרה!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>73 - 35</span>",
+                        answers: ["36", "37", "38", "39"],
+                        correct: 2,
+                        explanation: "73 - 35 = 38. תבור החכמה, נחסיר עם פריטה: 73-35=38. זה חיסור מאתגר!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>9 × 4</span>",
+                        answers: ["34", "35", "36", "37"],
+                        correct: 2,
+                        explanation: "9 × 4 = 36. תבור החכמה, מלוח הכפל הקסום: 9×4=36. זה כפל יפה!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>63 ÷ 9</span>",
+                        answers: ["6", "7", "8", "9"],
+                        correct: 1,
+                        explanation: "63 ÷ 9 = 7. תבור החכמה, כמה פעמים 9 נכנס ב-63? 7 פעמים! זה מלוח הכפל!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>10 - 4 × 2</span>",
+                        answers: ["2", "10", "12", "8"],
+                        correct: 0,
+                        explanation: "10 - 4 × 2 = 10 - 8 = 2. תבור החכמה, תחילה כפל, אחר כך חיסור! סדר הפעולות!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>56 + 37</span>",
+                        answers: ["91", "92", "93", "94"],
+                        correct: 2,
+                        explanation: "56 + 37 = 93. תבור החכמה, 50+30=80, 6+7=13, ביחד 93. חיבור מושלם!"
+                    }
+                ],
+                hard: [
+                    {
+                        question: "חשבי: <span class='math-text'>127 + 89</span>",
+                        answers: ["214", "215", "216", "217"],
+                        correct: 2,
+                        explanation: "127 + 89 = 216. תבור הגאונית, זה חיבור מורכב עם המרות! 100+80=180, 20+9=29, 7+0=7, ביחד 216!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>203 - 156</span>",
+                        answers: ["45", "46", "47", "48"],
+                        correct: 2,
+                        explanation: "203 - 156 = 47. תבור החכמה, זה חיסור עם פריטה מורכבת! צריך להשאיל מהמאות!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>12 × 8</span>",
+                        answers: ["94", "95", "96", "97"],
+                        correct: 2,
+                        explanation: "12 × 8 = 96. תבור החכמה, נחשב: 10×8=80, 2×8=16, ביחד 96. זה כפל מתקדם!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>84 ÷ 12</span>",
+                        answers: ["6", "7", "8", "9"],
+                        correct: 1,
+                        explanation: "84 ÷ 12 = 7. תבור החכמה, כמה פעמים 12 נכנס ב-84? 7 פעמים! זה חילוק מתקדם!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>5 × 6 + 8</span>",
+                        answers: ["36", "37", "38", "39"],
+                        correct: 2,
+                        explanation: "5 × 6 + 8 = 30 + 8 = 38. תבור החכמה, תחילה כפל, אחר כך חיבור! סדר הפעולות הקסום!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>345 + 167</span>",
+                        answers: ["510", "511", "512", "513"],
+                        correct: 2,
+                        explanation: "345 + 167 = 512. תבור הגאונית, נחבר עמודה אחר עמודה עם המרה! זה חיבור מאסטר!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>400 - 238</span>",
+                        answers: ["160", "161", "162", "163"],
+                        correct: 2,
+                        explanation: "400 - 238 = 162. תבור החכמה, נחסיר עם פריטה מ-400! זה חיסור מאתגר מאוד!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>15 × 6</span>",
+                        answers: ["88", "89", "90", "91"],
+                        correct: 2,
+                        explanation: "15 × 6 = 90. תבור החכמה, נחשב: 10×6=60, 5×6=30, ביחד 90. כפל מתקדם!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>96 ÷ 8</span>",
+                        answers: ["11", "12", "13", "14"],
+                        correct: 1,
+                        explanation: "96 ÷ 8 = 12. תבור החכמה, כמה פעמים 8 נכנס ב-96? 12 פעמים! זה חילוק מושלם!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>(4 + 6) × 7</span>",
+                        answers: ["68", "69", "70", "71"],
+                        correct: 2,
+                        explanation: "(4 + 6) × 7 = 10 × 7 = 70. תבור החכמה, תחילה סוגריים, אחר כך כפל! סדר הפעולות!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>567 + 298</span>",
+                        answers: ["863", "864", "865", "866"],
+                        correct: 2,
+                        explanation: "567 + 298 = 865. תבור הגאונית, נחבר עמודה אחר עמודה עם המרות! זה חיבור של אלופות!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>500 - 347</span>",
+                        answers: ["151", "152", "153", "154"],
+                        correct: 2,
+                        explanation: "500 - 347 = 153. תבור החכמה, נחסיר עם פריטה מ-500! זה חיסור של ילדות חכמות!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>18 × 4</span>",
+                        answers: ["70", "71", "72", "73"],
+                        correct: 2,
+                        explanation: "18 × 4 = 72. תבור החכמה, נחשב: 10×4=40, 8×4=32, ביחד 72. כפל מתקדם נהדר!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>100 ÷ 25</span>",
+                        answers: ["3", "4", "5", "6"],
+                        correct: 1,
+                        explanation: "100 ÷ 25 = 4. תבור החכמה, כמה פעמים 25 נכנס ב-100? 4 פעמים! זה חילוק עגול ויפה!"
+                    },
+                    {
+                        question: "חשבי: <span class='math-text'>8 × 9 - 15</span>",
+                        answers: ["55", "56", "57", "58"],
+                        correct: 2,
+                        explanation: "8 × 9 - 15 = 72 - 15 = 57. תבור החכמה, תחילה כפל, אחר כך חיסור! סדר הפעולות המושלם!"
+                    }
+                ]
+            },
+            geometry: {
+                easy: [
+                    {
+                        question: "איזה זווית זו? [תמונה של זווית ישרה - 90 מעלות]",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 1,
+                        explanation: "זו זווית ישרה, תבור החכמה! זווית של 90 מעלות בדיוק, כמו פינת הטירה הקסומה שלך!"
+                    },
+                    {
+                        question: "איזה זווית זו? [תמונה של זווית חדה - 45 מעלות]",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 0,
+                        explanation: "זו זווית חדה, תבור החכמה! זווית שהיא קטנה מ-90 מעלות, כמו חד החרב הקסום!"
+                    },
+                    {
+                        question: "איזה זווית זו? [תמונה של זווית קהה - 120 מעלות]",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 2,
+                        explanation: "זו זווית קהה, תבור החכמה! זווית שהיא גדולה מ-90 מעלות אבל קטנה מ-180, כמו פתיחת דלת הארמון!"
+                    },
+                    {
+                        question: "איזה זווית זו? [תמונה של זווית שטוחה - 180 מעלות]",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 3,
+                        explanation: "זו זווית שטוחה, תבור החכמה! זווית של 180 מעלות, כמו קו ישר על ארמון הקסם!"
+                    },
+                    {
+                        question: "איזה משולש זה? [משולש עם זווית של 90 מעלות]",
+                        answers: ["משולש חד-זווית", "משולש ישר-זווית", "משולש קהה-זווית", "משולש שווה-צלעות"],
+                        correct: 1,
+                        explanation: "זהו משולש ישר-זווית, תבור החכמה! משולש שיש לו זווית ישרה של 90 מעלות, כמו פינת הטירה!"
+                    },
+                    {
+                        question: "איזה משולש זה? [משולש שכל הזוויות שלו קטנות מ-90 מעלות]",
+                        answers: ["משולש חד-זווית", "משולש ישר-זווית", "משולש קהה-זווית", "משולש רחב"],
+                        correct: 0,
+                        explanation: "זהו משולש חד-זווית, תבור החכמה! משולש שכל הזוויות שלו חדות וקטנות מ-90 מעלות!"
+                    },
+                    {
+                        question: "איזה משולש זה? [משולש עם זווית גדולה מ-90 מעלות]",
+                        answers: ["משולש חד-זווית", "משולש ישר-זווית", "משולש קהה-זווית", "משולש גדול"],
+                        correct: 2,
+                        explanation: "זהו משולש קהה-זווית, תבור החכמה! משולש שיש לו זווית קהה גדולה מ-90 מעלות!"
+                    },
+                    {
+                        question: "כמה זוויות יש בכל משולש?",
+                        answers: ["2", "3", "4", "5"],
+                        correct: 1,
+                        explanation: "בכל משולש יש 3 זוויות, תבור החכמה! אחת בכל קודקוד של המשולש הקסום!"
+                    },
+                    {
+                        question: "מה הזווית הכי קטנה שיכולה להיות?",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 0,
+                        explanation: "הזווית הכי קטנה היא זווית חדה, תבור החכמה! זווית שקטנה מ-90 מעלות!"
+                    },
+                    {
+                        question: "מה הזווית הכי גדולה שלמדנו עליה?",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 3,
+                        explanation: "הזווית הכי גדולה שלמדנו היא זווית שטוחה של 180 מעלות, תבור החכמה!"
+                    },
+                    {
+                        question: "איזו זווית דומה לפינת דף נייר?",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 1,
+                        explanation: "פינת דף נייר היא זווית ישרה של 90 מעלות, תבור החכמה! כמו פינת הטירה שלך!"
+                    },
+                    {
+                        question: "כמה צלעות יש למשולש?",
+                        answers: ["2", "3", "4", "5"],
+                        correct: 1,
+                        explanation: "למשולש יש 3 צלעות, תבור החכמה! זה מה שהופך אותו למשולש הקסום!"
+                    },
+                    {
+                        question: "איזה זווית נראית כמו פתיחת דלת קצת?",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 0,
+                        explanation: "כשדלת הארמון נפתחת קצת, זו זווית חדה, תבור החכמה! קטנה מ-90 מעלות!"
+                    },
+                    {
+                        question: "איזה זווית נראית כמו דלת שנפתחה חצי מהדרך?",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 1,
+                        explanation: "כשדלת הארמון נפתחת חצי מהדרך, זו זווית ישרה של 90 מעלות, תבור החכמה!"
+                    },
+                    {
+                        question: "איזה זווית נראית כמו דלת שנפתחה יותר מחצי?",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 2,
+                        explanation: "כשדלת הארמון נפתחת יותר מחצי, זו זווית קהה, תבור החכמה! גדולה מ-90 מעלות!"
+                    }
+                ],
+                medium: [
+                    {
+                        question: "כמה זוויות ישרות יש בריבוע קסום?",
+                        answers: ["2", "3", "4", "1"],
+                        correct: 2,
+                        explanation: "בריבוע הקסום יש 4 זוויות ישרות, תבור החכמה! אחת בכל פינה של הארמון!"
+                    },
+                    {
+                        question: "איזו זווית גדולה יותר: זווית של 60 מעלות או זווית של 100 מעלות?",
+                        answers: ["60 מעלות", "100 מעלות", "הן שוות", "אי אפשר לדעת"],
+                        correct: 1,
+                        explanation: "100 מעלות גדולה יותר מ-60 מעלות, תבור החכמה! ככל שהמספר גדול יותר, הזווית רחבה יותר!"
+                    },
+                    {
+                        question: "משולש ישר-זווית יכול להיות גם:",
+                        answers: ["משולש חד-זווית", "משולש קהה-זווית", "שניהם", "אף אחד מהם"],
+                        correct: 3,
+                        explanation: "משולש ישר-זווית לא יכול להיות גם חד-זווית או קהה-זווית, תבור החכמה! יש לו רק זווית ישרה אחת!"
+                    },
+                    {
+                        question: "איזה זווית היא בדיוק באמצע בין זווית חדה לזווית קהה?",
+                        answers: ["זווית של 45 מעלות", "זווית ישרה", "זווית של 60 מעלות", "זווית שטוחה"],
+                        correct: 1,
+                        explanation: "זווית ישרה של 90 מעלות היא בדיוק הגבול בין זווית חדה לזווית קהה, תבור החכמה!"
+                    },
+                    {
+                        question: "במשולש קסום, אם יש זווית של 90 מעלות, השתיים האחרות הן:",
+                        answers: ["שתיהן חדות", "אחת חדה ואחת קהה", "שתיהן קהות", "שתיהן ישרות"],
+                        correct: 0,
+                        explanation: "במשולש ישר-זווית קסום, שתי הזוויות האחרות חייבות להיות חדות, תבור החכמה! כי סך כל הזוויות הוא 180 מעלות!"
+                    },
+                    {
+                        question: "איזה מהבאים נכון לגבי זוויות במשולש הקסום?",
+                        answers: ["יכולות להיות כולן קהות", "יכולות להיות כולן ישרות", "יכולות להיות כולן חדות", "חייבות להיות מעורבות"],
+                        correct: 2,
+                        explanation: "במשולש הקסום יכולות להיות שלוש זוויות חדות, תבור החכמה! זה נקרא משולש חד-זווית!"
+                    },
+                    {
+                        question: "זווית של 89 מעלות היא:",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 0,
+                        explanation: "89 מעלות קטן מ-90 מעלות, לכן זו זווית חדה, תבור החכמה! כמעט ישרה אבל עדיין חדה!"
+                    },
+                    {
+                        question: "זווית של 91 מעלות היא:",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 2,
+                        explanation: "91 מעלות גדול מ-90 מעלות, לכן זו זווית קהה, תבור החכמה! קצת יותר מזווית ישרה!"
+                    },
+                    {
+                        question: "איזה משולש יכול להיות שווה צלעות?",
+                        answers: ["רק חד-זווית", "רק ישר-זווית", "רק קהה-זווית", "כל סוג משולש"],
+                        correct: 0,
+                        explanation: "משולש שווה צלעות הוא תמיד חד-זווית, תבור החכמה! כל הזוויות שלו הן 60 מעלות!"
+                    },
+                    {
+                        question: "מהי הזווית הגדולה ביותר שיכולה להיות במשולש חד-זווית קסום?",
+                        answers: ["פחות מ-90 מעלות", "בדיוק 90 מעלות", "יותר מ-90 מעלות", "180 מעלות"],
+                        correct: 0,
+                        explanation: "במשולש חד-זווית קסום כל הזוויות חדות, כלומר קטנות מ-90 מעלות, תבור החכמה!"
+                    },
+                    {
+                        question: "כמה זוויות קהות יכולות להיות במשולש הקסום?",
+                        answers: ["0", "1", "2", "3"],
+                        correct: 1,
+                        explanation: "במשולש הקסום יכולה להיות רק זווית קהה אחת לכל היותר, תבור החכמה!"
+                    },
+                    {
+                        question: "איזו זווית דומה לחצי עיגול קסום?",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 3,
+                        explanation: "חצי עיגול קסום הוא זווית שטוחה של 180 מעלות, תבור החכמה!"
+                    },
+                    {
+                        question: "אם נחלק זווית ישרה לשתיים שוות, נקבל:",
+                        answers: ["שתי זוויות של 30 מעלות", "שתי זוויות של 45 מעלות", "שתי זוויות של 60 מעלות", "זווית אחת של 90 מעלות"],
+                        correct: 1,
+                        explanation: "זווית ישרה היא 90 מעלות, אז 90÷2=45 מעלות כל חלק, תבור החכמה!"
+                    },
+                    {
+                        question: "המשולש המיוחד שכל הזוויות שלו שוות נקרא:",
+                        answers: ["משולש ישר-זווית", "משולש שווה צלעות", "משולש קהה-זווית", "משולש ישר"],
+                        correct: 1,
+                        explanation: "במשולש שווה צלעות הקסום כל הזוויות שוות ל-60 מעלות, תבור החכמה!"
+                    },
+                    {
+                        question: "איזו זווית דומה לזווית בין מחטי השעון הקסום ב-3:00?",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 1,
+                        explanation: "ב-3:00 מחטי השעון הקסום יוצרות זווית ישרה של 90 מעלות, תבור החכמה!"
+                    }
+                ],
+                hard: [
+                    {
+                        question: "אם במשולש קסום יש זוויות של 40 ו-60 מעלות, הזווית השלישית היא:",
+                        answers: ["70 מעלות", "80 מעלות", "90 מעלות", "100 מעלות"],
+                        correct: 1,
+                        explanation: "סכום זוויות במשולש הקסום הוא 180 מעלות: 180-40-60=80 מעלות, תבור הגאונית!"
+                    },
+                    {
+                        question: "איזה סוג משולש יש אם הזוויות הן 30, 60 ו-90 מעלות?",
+                        answers: ["חד-זווית", "ישר-זווית", "קהה-זווית", "לא יכול להיות"],
+                        correct: 1,
+                        explanation: "יש זווית של 90 מעלות, לכן זה משולש ישר-זווית קסום, תבור החכמה!"
+                    },
+                    {
+                        question: "איזה סוג משולש יש אם הזוויות הן 50, 60 ו-70 מעלות?",
+                        answers: ["חד-זווית", "ישר-זווית", "קהה-זווית", "לא יכול להיות"],
+                        correct: 0,
+                        explanation: "כל הזוויות קטנות מ-90 מעלות, לכן זה משולש חד-זווית קסום, תבור החכמה!"
+                    },
+                    {
+                        question: "איזה סוג משולש יש אם הזוויות הן 30, 40 ו-110 מעלות?",
+                        answers: ["חד-זווית", "ישר-זווית", "קהה-זווית", "לא יכול להיות"],
+                        correct: 2,
+                        explanation: "יש זווית של 110 מעלות שהיא קהה, לכן זה משולש קהה-זווית קסום, תבור החכמה!"
+                    },
+                    {
+                        question: "אם במשולש שווה צלעות קסום כל זווית היא x מעלות, אז x שווה:",
+                        answers: ["30", "45", "60", "90"],
+                        correct: 2,
+                        explanation: "במשולש שווה צלעות קסום כל הזוויות שוות: 180÷3=60 מעלות, תבור הגאונית!"
+                    },
+                    {
+                        question: "איזו מהאפשרויות הבאות יכולה להיות זוויות במשולש קסום?",
+                        answers: ["90, 90, 90", "60, 70, 80", "45, 45, 80", "30, 60, 90"],
+                        correct: 3,
+                        explanation: "רק 30+60+90=180 מעלות, שזה סכום זוויות תקין במשולש הקסום, תבור החכמה!"
+                    },
+                    {
+                        question: "במשולש ישר-זווית קסום, אם זווית אחת היא 30 מעלות, הזווית השלישית היא:",
+                        answers: ["50 מעלות", "60 מעלות", "70 מעלות", "80 מעלות"],
+                        correct: 1,
+                        explanation: "יש כבר 90 ו-30 מעלות, אז הזווית השלישית: 180-90-30=60 מעלות, תבור החכמה!"
+                    },
+                    {
+                        question: "איזו זווית נוצרת בין מחטי השעון הקסום ב-6:00?",
+                        answers: ["זווית חדה", "זווית ישרה", "זווית קהה", "זווית שטוחה"],
+                        correct: 3,
+                        explanation: "ב-6:00 מחטי השעון הקסום מצביעות בכיוונים הפוכים ויוצרות זווית שטוחה של 180 מעלות, תבור החכמה!"
+                    },
+                    {
+                        question: "אם נחלק זווית שטוחה קסומה ל-4 חלקים שווים, כל חלק יהיה:",
+                        answers: ["30 מעלות", "45 מעלות", "60 מעלות", "90 מעלות"],
+                        correct: 1,
+                        explanation: "זווית שטוחה קסומה היא 180 מעלות: 180÷4=45 מעלות, תבור הגאונית!"
+                    },
+                    {
+                        question: "במשולש קהה-זווית קסום, הזווית הקהה יכולה להיות:",
+                        answers: ["85 מעלות", "95 מעלות", "180 מעלות", "200 מעלות"],
+                        correct: 1,
+                        explanation: "זווית קהה היא בין 90 ל-180 מעלות, ו-95 מעלות בטווח הזה, תבור החכמה!"
+                    },
+                    {
+                        question: "איזו זווית נוצרת בין מחטי השעון הקסום ב-1:00?",
+                        answers: ["30 מעלות", "45 מעלות", "60 מעלות", "90 מעלות"],
+                        correct: 0,
+                        explanation: "ב-1:00 יש זווית של 30 מעלות בין המחטים הקסומות, תבור החכמה!"
+                    },
+                    {
+                        question: "אם שתי זוויות במשולש קסום הן 45 מעלות כל אחת, הזווית השלישית היא:",
+                        answers: ["45 מעלות", "60 מעלות", "90 מעלות", "120 מעלות"],
+                        correct: 2,
+                        explanation: "180-45-45=90 מעלות, לכן זה משולש ישר-זווית קסום, תבור הגאונית!"
+                    },
+                    {
+                        question: "איזה מהמשולשים הבאים אינו אפשרי בממלכה הקסומה?",
+                        answers: ["זוויות: 60, 60, 60", "זוויות: 90, 45, 45", "זוויות: 120, 30, 30", "זוויות: 100, 50, 50"],
+                        correct: 3,
+                        explanation: "100+50+50=200 מעלות, אבל סכום זוויות במשולש חייב להיות 180 מעלות, תבור החכמה!"
+                    },
+                    {
+                        question: "מהו הסכום של כל הזוויות החיצוניות של משולש קסום?",
+                        answers: ["180 מעלות", "270 מעלות", "360 מעלות", "540 מעלות"],
+                        correct: 2,
+                        explanation: "סכום הזוויות החיצוניות של כל מצולע קסום הוא תמיד 360 מעלות, תבור הגאונית!"
+                    },
+                    {
+                        question: "אם זווית אחת במשולש קסום היא 120 מעלות, איזה סוג משולש זה?",
+                        answers: ["חד-זווית", "ישר-זווית", "קהה-זווית", "אי אפשר לדעת"],
+                        correct: 2,
+                        explanation: "120 מעלות היא זווית קהה (גדולה מ-90), לכן זה משולש קהה-זווית קסום, תבור החכמה!"
+                    }
+                ]
             }
-            
-            return questions;
-        }
+        };
 
-        // Additional generator functions
-        function generateComparisonQuestion(min, max) {
-            return generateBasicNumberQuestion(min, max);
-        }
-
-        function generatePlaceValueQuestion(min, max) {
-            const num = Math.floor(Math.random() * (max - min + 1)) + min;
-            const digits = num.toString();
-            const place = Math.floor(Math.random() * digits.length);
-            const placeName = ['אחדות', 'עשרות', 'מאות'][digits.length - 1 - place] || 'אחדות';
-            
-            const placeAnswers = [
-                digits[place],
-                digits[(place + 1) % digits.length] || '0',
-                digits[(place + 2) % digits.length] || '0',
-                (parseInt(digits[place]) + 1).toString()
-            ];
-            
-            const placeShuffled = shuffleAnswers(placeAnswers, digits[place]);
-            
-            return {
-                question: `כמה ${placeName} יש במספר ${num}?`,
-                answers: placeShuffled.answers,
-                correct: placeShuffled.correctIndex,
-                tip: `במספר ${num}, ב${placeName} יש ${digits[place]}`
-            };
-        }
-
-        function generateMixedOperations(level) {
-            const questions = [];
-            
-            for (let i = 0; i < 15; i++) {
-                const operations = level === 'intermediate' ? 
-                    ['addition', 'subtraction', 'multiplication'] :
-                    ['addition', 'subtraction', 'multiplication', 'division'];
-                
-                const op = operations[Math.floor(Math.random() * operations.length)];
-                questions.push(generateOperationQuestion(op, level));
-            }
-            
-            return questions;
-        }
-
-        function generateOperationQuestion(operation, level) {
-            let a, b, result, question, tip;
-            
-            const range = level === 'intermediate' ? [10, 50] : [20, 100];
-            
-            switch(operation) {
-                case 'addition':
-                    a = Math.floor(Math.random() * range[1]) + range[0];
-                    b = Math.floor(Math.random() * range[1]) + range[0];
-                    result = a + b;
-                    question = `כמה זה <span class='math-text'>${a} + ${b}</span>?`;
-                    tip = `${a} ועוד ${b} שווה ${result}`;
-                    break;
-                    
-                case 'subtraction':
-                    result = Math.floor(Math.random() * range[1]) + range[0];
-                    b = Math.floor(Math.random() * result);
-                    a = result + b;
-                    question = `כמה זה <span class='math-text'>${a} - ${b}</span>?`;
-                    tip = `${a} פחות ${b} שווה ${result}`;
-                    break;
-                    
-                case 'multiplication':
-                    a = Math.floor(Math.random() * 9) + 2;
-                    b = Math.floor(Math.random() * 9) + 2;
-                    result = a * b;
-                    question = `כמה זה <span class='math-text'>${a} × ${b}</span>? 🌟`;
-                    tip = `${a} כפול ${b} שווה ${result}`;
-                    break;
-                    
-                case 'division':
-                    result = Math.floor(Math.random() * 10) + 2;
-                    b = Math.floor(Math.random() * 8) + 2;
-                    a = result * b;
-                    question = `כמה זה <span class='math-text'>${a} ÷ ${b}</span>?`;
-                    tip = `${a} חלקי ${b} שווה ${result}`;
-                    break;
-            }
-            
-            const wrongAnswers = [
-                result + 1,
-                result - 1,
-                result + Math.floor(Math.random() * 5) + 2
-            ];
-            
-            const opAnswers = [result, ...wrongAnswers];
-            const opShuffled = shuffleAnswers(opAnswers.map(n => n.toString()), result.toString());
-            
-            return {
-                question,
-                answers: opShuffled.answers,
-                correct: opShuffled.correctIndex,
-                tip
-            };
-        }
-
-        function generateComplexOperations() {
-            return generateMixedOperations('advanced');
-        }
-
-        function generateMasterOperations() {
-            return generateMixedOperations('advanced');
-        }
-
-        function generateUltimateOperations() {
-            return generateMixedOperations('advanced');
-        }
-
-        function getMultiplicationTip(a, b) {
-            const tips = [
-                `חשבי על ${a} קבוצות של ${b}`,
-                `כמו ${b} פעמים ${a}`,
-                `ספרי בקפיצות של ${a}`
-            ];
-            return tips[Math.floor(Math.random() * tips.length)];
-        }
-
-        function generateGeometryVariation(base, type, index) {
-            const variation = {...base};
-            
-            if (type.includes('angles')) {
-                const angles = ['חדה', 'ישרה', 'קהה', 'שטוחה'];
-                const degrees = ['30°', '90°', '120°', '180°'];
-                const emojis = ['🔺', '📐', '📏', '➡️'];
-                
-                const angleType = index % 4;
-                variation.question = `איזו זווית של ${degrees[angleType]} היא זווית...?`;
-                
-                const angleAnswers = [`זווית ${angles[angleType]}`, ...angles.filter(a => a !== angles[angleType]).slice(0, 3)];
-                const angleShuffled = shuffleAnswers(angleAnswers, `זווית ${angles[angleType]}`);
-                
-                variation.answers = angleShuffled.answers;
-                variation.correct = angleShuffled.correctIndex;
-                variation.image = emojis[angleType];
-            }
-            
-            return variation;
-        }
-
-        // Positive feedback messages
-        const positiveFeedback = [
-            "תבור, איזו אלופה! המשיכי כך! 👑",
-            "את אלופת המתמטיקה! ⭐",
-            "מדהים תבור! את פשוט נפלאה! ✨",
-            "בדיוק נכון! את מושלמת! 💜",
-            "וואו תבור! איזו תשובה נפלאה! 🌟",
-            "מצוין! הטירה שלך גדלה! 🏰",
-            "תבור גאונית! רמה הבאה מחכה! 🚀",
-            "פנטסטי! את מתקדמת בצורה מושלמת! 💫"
+        // הודעות עידוד מיוחדות לתבור (בלי נסיכה)
+        const encouragementMessages = [
+            "תבור הקסומה! איזו תשובה מדהימה! 👑✨",
+            "מצוין תבור! את פשוט גאונית! המשיכי כך! 🌟💜", 
+            "כל הכבוד תבור! את אלופת המתמטיקה! 🎉🧚‍♀️",
+            "וואו תבור! את אלופה אמיתית! הטירה גדלה! ⭐🏆",
+            "נפלא תבור! איזו ילדה מושלמת במתמטיקה! 💎✨",
+            "מדהים תבור! פיית המתמטיקה גאה בך! 🧚‍♀️💖"
         ];
 
-        // Negative feedback messages
-        const negativeFeedback = [
-            "לא נורא תבור, ננסה שוב! את יכולה! 💜",
-            "כמעט הגעת! בואי ננסה פעם נוספת 🌟",
-            "זה בסדר לטעות, זה איך לומדים! בואי שוב! ✨",
-            "תבור, את חכמה ויכולה! עוד נסיון! 👑",
-            "לא בדיוק, אבל את בדרך הנכונה! 💖",
-            "כמעט! בואי נחשוב יחד על זה 🤔"
+        const motivationMessages = [
+            "לא נורא תבור החכמה! ננסה שוב יחד! 💜🌟",
+            "כמעט הגעת תבור! את יכולה! תמשיכי! 👑💪",
+            "זה בסדר תבור, כך ילדות חכמות לומדות! בואי ננסה שוב! 💎✨",
+            "בואי נחשוב יחד תבור החכמה! את ילדה מדהימה! 🌈💜",
+            "אל תוותרי תבור! את ילדה חזקה וחכמה! 🧚‍♀️💖",
+            "תבור היקרה, זה חלק מהלמידה! המשיכי לנסות! 🧚‍♀️🌟"
         ];
 
-        // Initialize game
-        function initGame() {
-            console.log('🎯 מתחיל אתחול המשחק המתקדם...');
-            try {
-                createStars();
-                loadGameState();
-                updateDisplay();
-                console.log('✅ המשחק המתקדם נטען בהצלחה!');
-            } catch (error) {
-                console.error('❌ שגיאה באתחול המשחק:', error);
-            }
-        }
-
-        // Create animated stars background
+        // פונקציות עזר
         function createStars() {
-            console.log('⭐ יוצר כוכבים...');
             const starsContainer = document.getElementById('stars');
-            starsContainer.innerHTML = '';
-            
             for (let i = 0; i < 50; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                star.textContent = '⭐';
+                star.innerHTML = ['⭐', '✨', '💫', '🌟'][Math.floor(Math.random() * 4)];
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
                 star.style.animationDelay = Math.random() * 2 + 's';
@@ -1015,350 +1461,235 @@
             }
         }
 
-        // Start game with selected topic
-        function startGame(topic) {
-            console.log(`🎮 מתחיל משחק בנושא: ${topic}, רמה: ${gameState.currentLevel}`);
+        function selectSubject(subject) {
+            currentSubject = subject;
             
-            try {
-                gameState.currentTopic = topic;
-                gameState.currentQuestion = 0;
-                gameState.correctAnswersInRow = 0;
+            const subjectTitles = {
+                'numbers': '🔢 מספרים טבעיים הקסומים',
+                'operations': '➕➖✖️➗ פעולות חשבון קסומות', 
+                'geometry': '📐 גאומטריה קסומה בארמון'
+            };
+            
+            document.getElementById('subjectTitle').innerHTML = 
+                `${subjectTitles[subject]}<br>בחרי רמת קושי עבור הנושא הקסום ✨`;
                 
-                // Generate questions for current level
-                const generator = questionGenerators[topic][gameState.currentLevel];
-                gameState.questions = generator ? generator() : [];
-                
-                console.log(`📝 נוצרו ${gameState.questions.length} שאלות לרמה ${gameState.currentLevel}`);
-                console.log('דוגמה לשאלה:', gameState.questions[0]);
-                
-                // Show game screen
-                document.getElementById('menuScreen').classList.add('hidden');
-                document.getElementById('gameScreen').classList.remove('hidden');
-                document.getElementById('resultScreen').classList.add('hidden');
-                
-                // Update level display
-                document.getElementById('levelDisplay').textContent = gameState.currentLevel;
-                
-                // Show first question
-                showQuestion();
-                
-            } catch (error) {
-                console.error('❌ שגיאה בהתחלת המשחק:', error);
-            }
+            showScreen('difficultySelection');
         }
 
-        // Show current question
+        function backToSubjects() {
+            showScreen('subjectSelection');
+        }
+
+        function backToDifficulty() {
+            showScreen('difficultySelection');
+        }
+
+        function startGame(difficulty) {
+            currentDifficulty = difficulty;
+            
+            // איפוס משתנים
+            currentQuestionIndex = 0;
+            gameScore = 0;
+            correctAnswers = 0;
+            answered = false;
+
+            // בחירת שאלות מהנושא והרמה שנבחרו
+            const availableQuestions = questionBank[currentSubject][difficulty];
+            currentQuestions = shuffleArray([...availableQuestions]).slice(0, 15);
+
+            showScreen('gameScreen');
+            showQuestion();
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
         function showQuestion() {
-            console.log(`❓ מציג שאלה ${gameState.currentQuestion + 1}/15 ברמה ${gameState.currentLevel}`);
-            
-            try {
-                if (!gameState.questions || gameState.currentQuestion >= gameState.questions.length) {
-                    console.log('🏁 סיום הרמה');
-                    showResults();
-                    return;
-                }
-                
-                const question = gameState.questions[gameState.currentQuestion];
-                console.log('📋 השאלה:', question);
-                
-                // Update question text
-                document.getElementById('questionText').innerHTML = question.question;
-                document.getElementById('questionNumber').textContent = gameState.currentQuestion + 1;
-                
-                // Hide next button and feedback
-                document.getElementById('nextBtn').classList.add('hidden');
-                document.getElementById('feedback').classList.remove('show');
-                
-                // Show image if exists
-                const imageContainer = document.getElementById('questionImage');
-                if (question.image) {
-                    imageContainer.innerHTML = `<div style="font-size: 4em; margin: 20px 0;">${question.image}</div>`;
-                } else {
-                    imageContainer.innerHTML = '';
-                }
-                
-                // Create answer buttons
-                const answersGrid = document.getElementById('answersGrid');
-                answersGrid.innerHTML = '';
-                
-                console.log('🔘 יוצר כפתורי תשובות:', question.answers);
-                
-                question.answers.forEach((answer, index) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'answer-btn';
-                    btn.innerHTML = answer;
-                    btn.onclick = () => selectAnswer(index);
-                    answersGrid.appendChild(btn);
-                    console.log(`כפתור ${index}: ${answer}`);
-                });
-                
-                updateProgress();
-                console.log('✅ השאלה הוצגה בהצלחה!');
-                
-            } catch (error) {
-                console.error('❌ שגיאה בהצגת השאלה:', error);
+            if (currentQuestionIndex >= currentQuestions.length) {
+                endGame();
+                return;
             }
+
+            answered = false;
+            const question = currentQuestions[currentQuestionIndex];
+
+            // עדכון מונים
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('gameScore').textContent = gameScore;
+
+            // הצגת השאלה
+            document.getElementById('questionText').innerHTML = question.question;
+
+            // יצירת תשובות
+            const answersContainer = document.getElementById('answersContainer');
+            answersContainer.innerHTML = '';
+
+            question.answers.forEach((answer, index) => {
+                const button = document.createElement('button');
+                button.className = 'answer-button';
+                button.innerHTML = answer;
+                button.onclick = () => selectAnswer(index);
+                answersContainer.appendChild(button);
+            });
+
+            // הסתרת הסבר וכפתור הבא
+            document.getElementById('explanation').classList.remove('show');
+            document.getElementById('nextButton').classList.remove('show');
         }
 
-        // Handle answer selection
         function selectAnswer(selectedIndex) {
-            console.log('👆 נבחרה תשובה:', selectedIndex);
+            if (answered) return;
             
-            try {
-                const question = gameState.questions[gameState.currentQuestion];
-                const buttons = document.querySelectorAll('.answer-btn');
-                
-                // Disable all buttons
-                buttons.forEach(btn => btn.style.pointerEvents = 'none');
-                
-                if (selectedIndex === question.correct) {
-                    console.log('✅ תשובה נכונה!');
-                    
-                    buttons[selectedIndex].classList.add('correct');
-                    gameState.score += 10;
-                    gameState.correctAnswersInRow++;
-                    
-                    showFeedback(true, positiveFeedback[Math.floor(Math.random() * positiveFeedback.length)]);
-                    createFireworks();
-                    
-                } else {
-                    console.log('❌ תשובה שגויה');
-                    
-                    buttons[selectedIndex].classList.add('incorrect');
-                    buttons[question.correct].classList.add('correct');
-                    
-                    showFeedback(false, negativeFeedback[Math.floor(Math.random() * negativeFeedback.length)] + '<br><small>' + question.tip + '</small>');
-                }
-                
-                updateDisplay();
-                
-                // Show next button after delay
-                setTimeout(() => {
-                    document.getElementById('nextBtn').classList.remove('hidden');
-                }, 2000);
-                
-            } catch (error) {
-                console.error('❌ שגיאה בבחירת תשובה:', error);
-            }
-        }
-
-        // Show feedback message
-        function showFeedback(isPositive, message) {
-            try {
-                const feedback = document.getElementById('feedback');
-                feedback.innerHTML = message;
-                feedback.className = 'feedback show ' + (isPositive ? 'positive' : 'negative');
-            } catch (error) {
-                console.error('❌ שגיאה בהצגת משוב:', error);
-            }
-        }
-
-        // Create fireworks animation
-        function createFireworks() {
-            try {
-                const fireworksContainer = document.getElementById('fireworks');
-                const emojis = ['🎉', '✨', '⭐', '🌟', '💫', '🎊'];
-                
-                for (let i = 0; i < 15; i++) {
-                    setTimeout(() => {
-                        const firework = document.createElement('div');
-                        firework.className = 'firework';
-                        firework.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-                        firework.style.left = Math.random() * 100 + '%';
-                        firework.style.top = Math.random() * 100 + '%';
-                        fireworksContainer.appendChild(firework);
-                        
-                        setTimeout(() => firework.remove(), 1000);
-                    }, i * 100);
-                }
-            } catch (error) {
-                console.error('❌ שגיאה בזיקוקים:', error);
-            }
-        }
-
-        // Next question
-        function nextQuestion() {
-            console.log('➡️ עובר לשאלה הבאה...');
+            answered = true;
+            const question = currentQuestions[currentQuestionIndex];
+            const buttons = document.querySelectorAll('.answer-button');
             
-            try {
-                gameState.currentQuestion++;
-                
-                if (gameState.currentQuestion >= 15) {
-                    console.log('🏁 סיום הרמה');
-                    showResults();
-                } else {
-                    showQuestion();
+            // עדכון מראה הכפתורים
+            buttons.forEach((btn, index) => {
+                btn.classList.add('disabled');
+                if (index === question.correct) {
+                    btn.classList.add('correct');
+                } else if (index === selectedIndex) {
+                    btn.classList.add('incorrect');
                 }
-            } catch (error) {
-                console.error('❌ שגיאה במעבר לשאלה הבאה:', error);
-            }
-        }
+            });
 
-        // Show results screen
-        function showResults() {
-            try {
-                document.getElementById('gameScreen').classList.add('hidden');
-                document.getElementById('resultScreen').classList.remove('hidden');
+            // בדיקת תשובה
+            if (selectedIndex === question.correct) {
+                correctAnswers++;
+                gameScore += 10;
+                totalScore += 10;
+                totalCorrectAnswers++;
                 
-                const percentage = Math.round((gameState.correctAnswersInRow / 15) * 100);
+                // עדכון מונים כלליים
+                document.getElementById('totalScore').textContent = totalScore;
+                document.getElementById('correctCount').textContent = totalCorrectAnswers;
                 
-                let title, message;
+                // אפקטים וחגיגה
+                createFireworks();
+                showEncouragementMessage();
                 
-                if (percentage >= 80) {
-                    title = 'תבור המדהימה! עלית לרמה הבאה! 👑🚀';
-                    message = `מעולה! השגת ${percentage}% נכונות!<br>
-                              צברת ${gameState.correctAnswersInRow} תשובות נכונות מתוך 15<br>
-                              🌟 רמה ${gameState.currentLevel} הושלמה בהצלחה! 🌟<br>
-                              מוכנה לרמה ${gameState.currentLevel + 1}?`;
-                    
-                    // Level up if score is good enough
-                    if (gameState.currentLevel < 10) {
-                        levelUp();
-                    }
-                } else if (percentage >= 60) {
-                    title = 'כל הכבוד תבור! ⭐';
-                    message = `טוב מאוד! השגת ${percentage}% נכונות<br>
-                              צברת ${gameState.correctAnswersInRow} תשובות נכונות מתוך 15<br>
-                              עוד קצת תרגול ותעלי לרמה הבאה! 💪`;
-                } else {
-                    title = 'תבור, את בדרך הנכונה! 💜';
-                    message = `השגת ${percentage}% נכונות<br>
-                              צברת ${gameState.correctAnswersInRow} תשובות נכונות מתוך 15<br>
-                              בואי נתרגל עוד קצת ברמה הזו! 📚`;
-                }
-                
-                document.getElementById('resultTitle').innerHTML = title;
-                document.getElementById('resultMessage').innerHTML = message;
-                      
-                console.log('📊 תוצאות:', percentage + '% נכונות');
-            } catch (error) {
-                console.error('❌ שגיאה בהצגת תוצאות:', error);
-            }
-        }
-
-        // Level up
-        function levelUp() {
-            try {
-                if (gameState.currentLevel < 10) {
-                    gameState.currentLevel++;
-                    
-                    const notification = document.createElement('div');
-                    notification.className = 'level-up-notification';
-                    notification.innerHTML = `🏰 עלית לרמה ${gameState.currentLevel}! 🏰<br>
-                                            <small>הטירה שלך גדלה!<br>אתגרים חדשים מחכים!</small>`;
-                    document.body.appendChild(notification);
-                    
-                    setTimeout(() => notification.remove(), 3000);
-                    
-                    updateCastle();
-                    console.log('📈 עלייה לרמה:', gameState.currentLevel);
-                }
-            } catch (error) {
-                console.error('❌ שגיאה בעלייה לרמה:', error);
-            }
-        }
-
-        // Update castle display
-        function updateCastle() {
-            try {
-                const castleParts = document.querySelectorAll('.castle-part');
-                castleParts.forEach((part, index) => {
-                    if (index < gameState.currentLevel) {
-                        part.classList.add('built');
-                    }
-                });
-            } catch (error) {
-                console.error('❌ שגיאה בעדכון הטירה:', error);
-            }
-        }
-
-        // Next level function
-        function nextLevel() {
-            if (gameState.currentTopic && gameState.currentLevel <= 10) {
-                startGame(gameState.currentTopic);
-            } else {
-                showMenu();
-            }
-        }
-
-        // Update progress bar
-        function updateProgress() {
-            try {
-                const progress = ((gameState.currentQuestion + 1) / 15) * 100;
-                document.getElementById('progressFill').style.width = progress + '%';
-                document.getElementById('progressText').textContent = Math.round(progress) + '%';
-            } catch (error) {
-                console.error('❌ שגיאה בעדכון התקדמות:', error);
-            }
-        }
-
-        // Update display
-        function updateDisplay() {
-            try {
-                document.getElementById('currentScore').textContent = gameState.score;
-                document.getElementById('currentLevel').textContent = gameState.currentLevel;
-                document.getElementById('correctAnswers').textContent = `${gameState.correctAnswersInRow}/15`;
-                
+                // בניית הטירה
                 updateCastle();
-                saveGameState();
-            } catch (error) {
-                console.error('❌ שגיאה בעדכון התצוגה:', error);
+                
+            } else {
+                showMotivationMessage();
+            }
+
+            // הצגת הסבר
+            document.getElementById('explanationText').innerHTML = question.explanation;
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('nextButton').classList.add('show');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        function updateCastle() {
+            const castleDisplay = document.getElementById('castleDisplay');
+            const castleStages = [
+                '🏰✨',
+                '🏰👑✨',
+                '🏰👑🌟✨',
+                '🏰👑🌟💎✨',
+                '🏰👑🌟💎🧚‍♀️✨'
+            ];
+            
+            const stage = Math.min(Math.floor(totalCorrectAnswers / 3), castleStages.length - 1);
+            castleDisplay.innerHTML = castleStages[stage];
+        }
+
+        function createFireworks() {
+            const fireworksContainer = document.getElementById('fireworks');
+            
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = Math.random() * 100 + '%';
+                    firework.style.top = Math.random() * 100 + '%';
+                    firework.style.background = ['#ff69b4', '#da70d6', '#9370db', '#ffd700', '#4ecdc4'][Math.floor(Math.random() * 5)];
+                    firework.style.animation = 'firework-explosion 1s ease-out forwards';
+                    
+                    fireworksContainer.appendChild(firework);
+                    
+                    setTimeout(() => firework.remove(), 1000);
+                }, i * 100);
             }
         }
 
-        // Show main menu
-        function showMenu() {
-            try {
-                document.getElementById('gameScreen').classList.add('hidden');
-                document.getElementById('resultScreen').classList.add('hidden');
-                document.getElementById('menuScreen').classList.remove('hidden');
-                console.log('🏠 חזרה לתפריט הראשי');
-            } catch (error) {
-                console.error('❌ שגיאה בחזרה לתפריט:', error);
+        function showEncouragementMessage() {
+            const message = encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
+            showTempMessage(message);
+        }
+
+        function showMotivationMessage() {
+            const message = motivationMessages[Math.floor(Math.random() * motivationMessages.length)];
+            showTempMessage(message);
+        }
+
+        function showTempMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'encouragement-message';
+            messageDiv.textContent = message;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => messageDiv.remove(), 3000);
+        }
+
+        function endGame() {
+            const percentage = Math.round((correctAnswers / currentQuestions.length) * 100);
+            
+            // הודעות סיום מותאמות לתבור (בלי נסיכה)
+            let finalMessage = '';
+            if (percentage >= 90) {
+                finalMessage = `תבור המדהימה! 👑✨<br>קיבלת ${correctAnswers} מתוך ${currentQuestions.length} נכון (${percentage}%)!<br>את פשוט מושלמת ופיית המתמטיקה גאה בך!`;
+                currentLevel++;
+            } else if (percentage >= 70) {
+                finalMessage = `כל הכבוד תבור! 🌟💜<br>קיבלת ${correctAnswers} מתוך ${currentQuestions.length} נכון (${percentage}%)!<br>ביצוע מעולה! הטירה שלך גדלה!`;
+            } else if (percentage >= 50) {
+                finalMessage = `יפה מאוד תבור! 🎯💎<br>קיבלת ${correctAnswers} מתוך ${currentQuestions.length} נכון (${percentage}%)!<br>את מתקדמת נהדר! המשיכי כך!`;
+            } else {
+                finalMessage = `תבור היקרה! 💜🌈<br>קיבלת ${correctAnswers} מתוך ${currentQuestions.length} נכון (${percentage}%)!<br>בואי נתרגל עוד קצת יחד! את יכולה!`;
+            }
+
+            // עדכון מונים
+            document.getElementById('currentLevel').textContent = currentLevel;
+            
+            // הצגת תוצאות
+            document.getElementById('finalScoreText').innerHTML = `ניקוד המשחק: ${gameScore} נקודות קסם!`;
+            document.getElementById('achievementText').innerHTML = finalMessage;
+            
+            showScreen('completionScreen');
+            
+            if (percentage >= 70) {
+                createFireworks();
             }
         }
 
-        // Save game state to localStorage
-        function saveGameState() {
-            try {
-                const gameData = {
-                    score: gameState.score,
-                    currentLevel: gameState.currentLevel
-                };
-                localStorage.setItem('tavorMathGameAdvanced', JSON.stringify(gameData));
-            } catch (error) {
-                console.error('❌ שגיאה בשמירת המשחק:', error);
-            }
+        function playAgain() {
+            startGame(currentDifficulty);
         }
 
-        // Load game state from localStorage
-        function loadGameState() {
-            try {
-                const saved = localStorage.getItem('tavorMathGameAdvanced');
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    gameState.score = data.score || 0;
-                    gameState.currentLevel = data.currentLevel || 1;
-                    console.log('💾 נטען מצב שמור:', data);
-                }
-            } catch (error) {
-                console.error('❌ שגיאה בטעינת מצב שמור:', error);
-            }
-        }
-
-        // Initialize the game when page loads
-        window.addEventListener('load', function() {
-            console.log('🌟 הדף נטען - מתחיל את המשחק המתקדם...');
-            initGame();
-        });
-        
-        if (document.readyState === 'complete') {
-            console.log('📄 המסמך כבר מוכן - מתחיל מיידי');
-            initGame();
-        }
-        
-        window.addEventListener('error', function(e) {
-            console.error('🚨 שגיאה כללית:', e.error);
+        // אתחול המשחק
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            updateCastle();
         });
     </script>
 </body>
